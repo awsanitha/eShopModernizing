@@ -9,7 +9,7 @@ namespace eShopLegacyWebForms.Pages.Catalog
 {
     public class CreateModel : PageModel
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(CreateModel));
 
         private readonly ICatalogService _catalogService;
 

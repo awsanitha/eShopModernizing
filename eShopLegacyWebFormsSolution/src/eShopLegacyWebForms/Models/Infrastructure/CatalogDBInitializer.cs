@@ -341,7 +341,11 @@ namespace eShopLegacyWebForms.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dBSequenceName)
         {
+            // dBSequenceName is a private constant (DBCatalogSequenceName or DBBrandSequenceName),
+            // not user input — string interpolation here is safe.
+#pragma warning disable EF1002
             var result = context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dBSequenceName}").ToList();
+#pragma warning restore EF1002
             var sequenceId = (int)result.Single();
             return sequenceId;
         }
