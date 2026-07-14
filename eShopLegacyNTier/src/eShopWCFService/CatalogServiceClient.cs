@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using eShopWCFService.Models;
 
 namespace eShopWCFService
 {
-    public class CatalogServiceClient : System.ServiceModel.ClientBase<ICatalogService>, ICatalogService
+    /// <summary>
+    /// Client proxy stub for the catalog service (not used server-side; kept for API compatibility).
+    /// </summary>
+    public class CatalogServiceClient : ICatalogService
     {
         public void CreateAvailableStock(CatalogItemsStock catalogItemsStock)
         {
@@ -25,32 +26,41 @@ namespace eShopWCFService
 
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            return base.Channel.GetAvailableStock(date, catalogItemId);
+            throw new NotImplementedException();
         }
 
         public List<CatalogBrand> GetCatalogBrands()
         {
-            return base.Channel.GetCatalogBrands();
+            throw new NotImplementedException();
         }
 
-        public List<CatalogItem> GetCatalogItems()
+        public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
         {
-            return base.Channel.GetCatalogItems();
+            throw new NotImplementedException();
         }
 
         public List<CatalogType> GetCatalogTypes()
         {
-            return base.Channel.GetCatalogTypes();
+            throw new NotImplementedException();
         }
 
         public void RemoveCatalogItem(CatalogItem catalogItem)
         {
-            base.Channel.RemoveCatalogItem(catalogItem);
+            throw new NotImplementedException();
         }
 
         public void UpdateCatalogItem(CatalogItem catalogItem)
         {
-            base.Channel.UpdateCatalogItem(catalogItem);
+            throw new NotImplementedException();
+        }
+
+        public DiscountItem GetDiscount(DateTime day)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
         }
     }
 }
