@@ -1,26 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.ServiceModel;
 using eShopWCFService.Models;
 
 namespace eShopWCFService
 {
-    public class CatalogServiceClient : System.ServiceModel.ClientBase<ICatalogService>, ICatalogService
+    public class CatalogServiceClient : ClientBase<ICatalogService>, ICatalogService
     {
+        public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, EndpointAddress remoteAddress)
+            : base(binding, remoteAddress)
+        {
+        }
+
         public void CreateAvailableStock(CatalogItemsStock catalogItemsStock)
         {
-            throw new NotImplementedException();
+            base.Channel.CreateAvailableStock(catalogItemsStock);
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
-            throw new NotImplementedException();
+            base.Channel.CreateCatalogItem(catalogItem);
         }
 
         public CatalogItem FindCatalogItem(int id)
         {
-            throw new NotImplementedException();
+            return base.Channel.FindCatalogItem(id);
         }
 
         public int GetAvailableStock(DateTime date, int catalogItemId)
@@ -33,9 +35,9 @@ namespace eShopWCFService
             return base.Channel.GetCatalogBrands();
         }
 
-        public List<CatalogItem> GetCatalogItems()
+        public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
         {
-            return base.Channel.GetCatalogItems();
+            return base.Channel.GetCatalogItems(brandIdFilter, typeIdFilter);
         }
 
         public List<CatalogType> GetCatalogTypes()
@@ -51,6 +53,24 @@ namespace eShopWCFService
         public void UpdateCatalogItem(CatalogItem catalogItem)
         {
             base.Channel.UpdateCatalogItem(catalogItem);
+        }
+
+        public DiscountItem GetDiscount(DateTime day)
+        {
+            return base.Channel.GetDiscount(day);
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                if (State != CommunicationState.Faulted)
+                    Close();
+            }
+            finally
+            {
+                Abort();
+            }
         }
     }
 }

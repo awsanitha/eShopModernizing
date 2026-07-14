@@ -1,12 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+
 namespace eShopWCFService.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
-    using System.Runtime.Serialization;
-
     [DataContract]
     public partial class CatalogType
     {
@@ -16,6 +13,6 @@ namespace eShopWCFService.Models
 
         [StringLength(50)]
         [DataMember]
-        public string Type { get; set; }
+        public string? Type { get; set; }
     }
 }
