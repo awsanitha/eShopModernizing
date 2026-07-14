@@ -1,16 +1,13 @@
-﻿using eShopWCFService.Models;
-using System;
+using eShopWCFService.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
+using CoreWCF;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IService1" in both code and config file together.
+    // NOTE: Service contract for the eShop catalog WCF service (migrated from System.ServiceModel to CoreWCF)
     [ServiceContract]
-    public interface ICatalogService : IDisposable
+    public interface ICatalogService
     {
         [OperationContract]
         CatalogItem FindCatalogItem(int id);
