@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using eShopLegacyWebForms.Models;
@@ -19,7 +19,7 @@ namespace eShopLegacyWebForms.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
         {
             var items = ComposeCatalogItems(catalogItems);
-            
+
             var itemsOnPage = items
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
@@ -30,7 +30,7 @@ namespace eShopLegacyWebForms.Services
                 pageIndex, pageSize, items.Count, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
             return catalogItems.FirstOrDefault(x => x.Id == id);
         }
@@ -78,7 +78,6 @@ namespace eShopLegacyWebForms.Services
             items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
 
             return items;
-            ;
         }
     }
 }

@@ -1,0 +1,121 @@
+@model eShopLegacyWebForms.Models.CatalogItem
+
+@{
+    ViewData["Title"] = "Edit";
+    var brands = ViewBag.Brands as IEnumerable<eShopLegacyWebForms.Models.CatalogBrand>;
+    var types = ViewBag.Types as IEnumerable<eShopLegacyWebForms.Models.CatalogType>;
+}
+
+<h2 class="esh-body-title">Edit</h2>
+
+<div class="container">
+    <form method="post" asp-route="EditProductRoute" asp-route-id="@Model.Id">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <img class="col-md-6 esh-picture" src="/Pics/@Model.PictureFileName" alt="@Model.Name" />
+            <div class="col-md-6 form-horizontal">
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Name</label>
+                    <div class="col-md-8">
+                        <input id="Name" name="name" class="form-control" value="@Model.Name" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Description</label>
+                    <div class="col-md-8">
+                        <input id="Description" name="description" class="form-control" value="@Model.Description" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Brand</label>
+                    <div class="col-md-8">
+                        <select id="BrandDropDownList" name="brandId" class="form-control">
+                            @if (brands != null)
+                            {
+                                @foreach (var brand in brands)
+                                {
+                                    if (brand.Id == Model.CatalogBrandId)
+                                    {
+                                        <option value="@brand.Id" selected>@brand.Brand</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@brand.Id">@brand.Brand</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Type</label>
+                    <div class="col-md-8">
+                        <select id="TypeDropDownList" name="typeId" class="form-control">
+                            @if (types != null)
+                            {
+                                @foreach (var type in types)
+                                {
+                                    if (type.Id == Model.CatalogTypeId)
+                                    {
+                                        <option value="@type.Id" selected>@type.Type</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@type.Id">@type.Type</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Price</label>
+                    <div class="col-md-8">
+                        <input id="Price" name="price" type="number" step="0.01" min="0" max="1000000" class="form-control" value="@Model.Price" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Picture name</label>
+                    <div class="col-md-8">
+                        <input id="PictureFileName" name="pictureFileName" class="form-control" readonly
+                               title="Not allowed for edition" value="@Model.PictureFileName" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Stock</label>
+                    <div class="col-md-8">
+                        <input id="Stock" name="stock" type="number" min="0" max="10000000" class="form-control" value="@Model.AvailableStock" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Restock</label>
+                    <div class="col-md-8">
+                        <input id="Restock" name="restock" type="number" min="0" max="10000000" class="form-control" value="@Model.RestockThreshold" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Max stock</label>
+                    <div class="col-md-8">
+                        <input id="Maxstock" name="maxstock" type="number" min="0" max="10000000" class="form-control" value="@Model.MaxStockThreshold" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-12 text-right esh-button-actions">
+                        <a href="/" class="btn esh-button esh-button-secondary">[ Cancel ]</a>
+                        <button type="submit" class="btn esh-button esh-button-primary">[ Save ]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
