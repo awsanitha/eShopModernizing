@@ -1,9 +1,7 @@
-﻿using eShopWinForms.Controllers;
+using eShopWinForms.Controllers;
 using eShopWinForms.eShopServiceReference;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ServiceModel;
 using System.Windows.Forms;
 
 namespace eShopWinForms
@@ -19,13 +17,16 @@ namespace eShopWinForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Use explicit binding + address (config-name constructor not supported on .NET 10)
+            var binding = new BasicHttpBinding();
+            var endpointAddress = new EndpointAddress("http://localhost:62314/CatalogService.svc");
+
             CatalogView catalogView = new CatalogView();
-            ICatalogService service = new eShopServiceReference.CatalogServiceClient();
+            ICatalogService service = new eShopServiceReference.CatalogServiceClient(binding, endpointAddress);
             CatalogController catalogController = new CatalogController(service, catalogView);
 
             catalogController.LoadView();
             catalogView.ShowDialog();
         }
-
     }
 }
