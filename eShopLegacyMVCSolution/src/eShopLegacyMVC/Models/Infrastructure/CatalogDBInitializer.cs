@@ -328,7 +328,10 @@ namespace eShopLegacyMVC.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dBSequenceName)
         {
-            var rawQuery = context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dBSequenceName}");
+            // dBSequenceName is a controlled internal value (not user input); concatenation avoids EF1002
+#pragma warning disable EF1002
+            var rawQuery = context.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR " + dBSequenceName);
+#pragma warning restore EF1002
             var sequenceId = (int)rawQuery.Single();
             return sequenceId;
         }

@@ -10,6 +10,9 @@ namespace eShopLegacyMVC.Models
         public CatalogItem()
         {
             PictureFileName = DefaultPictureName;
+            Name = string.Empty;
+            Description = string.Empty;
+            PictureUri = string.Empty;
         }
         public int Id { get; set; }
 
@@ -25,7 +28,7 @@ namespace eShopLegacyMVC.Models
         public decimal Price { get; set; }
 
         [Display(Name = "Picture name")]
-        public string PictureFileName { get; set; }
+        public string? PictureFileName { get; set; }
 
         public string PictureUri { get; set; }
 
@@ -33,13 +36,13 @@ namespace eShopLegacyMVC.Models
         public int CatalogTypeId { get; set; }
 
         [Display(Name = "Type")]
-        public CatalogType CatalogType { get; set; }
+        public CatalogType? CatalogType { get; set; }
 
         [Display(Name = "Brand")]
         public int CatalogBrandId { get; set; }
 
         [Display(Name = "Brand")]
-        public CatalogBrand CatalogBrand { get; set; }
+        public CatalogBrand? CatalogBrand { get; set; }
 
         // Quantity in stock
         [Range(0, 10000000, ErrorMessage = "The field Stock must be between 0 and 10 million.")]
