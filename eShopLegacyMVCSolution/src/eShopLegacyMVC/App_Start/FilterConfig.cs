@@ -1,13 +1,6 @@
-﻿using System.Web;
-using System.Web.Mvc;
-
+// FilterConfig.cs - Global filters are registered in Program.cs via AddControllersWithViews(options => ...).
+// See Program.cs for configuration.
 namespace eShopLegacyMVC
 {
-    public class FilterConfig
-    {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-        {
-            filters.Add(new HandleErrorAttribute());
-        }
-    }
+    // Intentionally empty - replaced by Program.cs middleware configuration
 }

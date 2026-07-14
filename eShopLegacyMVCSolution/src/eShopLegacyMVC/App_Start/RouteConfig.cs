@@ -1,20 +1,6 @@
-﻿using System.Web.Mvc;
-using System.Web.Routing;
-
+// RouteConfig.cs - Routes are configured in Program.cs via MapControllerRoute.
+// See Program.cs for configuration.
 namespace eShopLegacyMVC
 {
-    public class RouteConfig
-    {
-        public static void RegisterRoutes(RouteCollection routes)
-        {
-            routes.MapMvcAttributeRoutes();
-            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Catalog", action = "Index", id = UrlParameter.Optional }
-            );
-        }
-    }
+    // Intentionally empty - replaced by Program.cs route configuration
 }
