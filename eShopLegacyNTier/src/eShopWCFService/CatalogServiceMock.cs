@@ -1,10 +1,5 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWCFService
 {
@@ -25,7 +20,7 @@ namespace eShopWCFService
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
+            return catalogItems.FirstOrDefault(x => x.Id == id)!;
         }
 
         public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
@@ -37,14 +32,14 @@ namespace eShopWCFService
                 (typeFilterIsNull ? true : x.CatalogTypeId == typeIdFilter)).ToList();
         }
 
-        public IEnumerable<CatalogType> GetCatalogTypes()
+        public List<CatalogType> GetCatalogTypes()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+            return catalogTypes;
         }
 
-        public IEnumerable<CatalogBrand> GetCatalogBrands()
+        public List<CatalogBrand> GetCatalogBrands()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogBrands();
+            return catalogBrands;
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)
@@ -74,32 +69,22 @@ namespace eShopWCFService
 
         private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
         {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-            items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
-            items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
+            var types = PreconfiguredData.GetPreconfiguredCatalogTypes();
+            var brands = PreconfiguredData.GetPreconfiguredCatalogBrands();
+            items.ForEach(i => i.CatalogBrand = brands.First(b => b.Id == i.CatalogBrandId));
+            items.ForEach(i => i.CatalogType = types.First(b => b.Id == i.CatalogTypeId));
 
             return items;
         }
 
-        List<CatalogBrand> ICatalogService.GetCatalogBrands()
-        {
-            return catalogBrands;
-        }
-
-        List<CatalogType> ICatalogService.GetCatalogTypes()
-        {
-            return catalogTypes;
-        }
-
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date)).AvailableStock;
+            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date))?.AvailableStock ?? 0;
         }
 
         public void CreateAvailableStock(CatalogItemsStock cat)
         {
-            CatalogItemsStock s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
+            CatalogItemsStock? s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == cat.Date.Date).FirstOrDefault();
 
             /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
