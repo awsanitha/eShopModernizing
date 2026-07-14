@@ -9,7 +9,7 @@ namespace eShopLegacyWebForms.Pages.Catalog
 {
     public class EditModel : PageModel
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(EditModel));
 
         private readonly ICatalogService _catalogService;
 

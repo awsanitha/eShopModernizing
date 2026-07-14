@@ -8,7 +8,7 @@ namespace eShopLegacyWebForms.Pages.Catalog
 {
     public class DeleteModel : PageModel
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(DeleteModel));
 
         private readonly ICatalogService _catalogService;
 

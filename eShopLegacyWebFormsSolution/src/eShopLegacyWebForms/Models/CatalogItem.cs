@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace eShopLegacyWebForms.Models
@@ -10,7 +10,11 @@ namespace eShopLegacyWebForms.Models
         public CatalogItem()
         {
             PictureFileName = DefaultPictureName;
+            Name = string.Empty;
+            Description = string.Empty;
+            PictureUri = string.Empty;
         }
+
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -32,13 +36,13 @@ namespace eShopLegacyWebForms.Models
         public int CatalogTypeId { get; set; }
 
         [Display(Name = "Type")]
-        public CatalogType CatalogType { get; set; }
+        public CatalogType? CatalogType { get; set; }
 
         [Display(Name = "Brand")]
         public int CatalogBrandId { get; set; }
 
         [Display(Name = "Brand")]
-        public CatalogBrand CatalogBrand { get; set; }
+        public CatalogBrand? CatalogBrand { get; set; }
 
         // Quantity in stock
         [Range(0, 10000000, ErrorMessage = "The field Stock must be between 0 and 10 million.")]
@@ -50,7 +54,7 @@ namespace eShopLegacyWebForms.Models
         [Display(Name = "Restock")]
         public int RestockThreshold { get; set; }
 
-        // Maximum number of units that can be in-stock at any time (due to physicial/logistical constraints in warehouses)
+        // Maximum number of units that can be in-stock at any time (due to physical/logistical constraints in warehouses)
         [Range(0, 10000000, ErrorMessage = "The field Stock must be between 0 and 10 million.")]
         [Display(Name = "Max stock")]
         public int MaxStockThreshold { get; set; }

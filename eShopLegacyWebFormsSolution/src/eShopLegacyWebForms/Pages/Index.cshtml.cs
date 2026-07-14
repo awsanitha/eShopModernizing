@@ -8,7 +8,7 @@ namespace eShopLegacyWebForms.Pages
 {
     public class IndexModel : PageModel
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(IndexModel));
 
         private readonly ICatalogService _catalogService;
 
