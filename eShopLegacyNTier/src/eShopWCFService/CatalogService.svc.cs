@@ -1,16 +1,13 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
+using CoreWCF;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "CatalogService" in both code and config file together.
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
@@ -101,7 +98,6 @@ namespace eShopWCFService
             CatalogItemsStock s = ents.CatalogItemsStocks.Where(x => x.CatalogItemId == catalogItemsStock.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == catalogItemsStock.Date.Date).FirstOrDefault();
 
-            /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
             if (s != null)
             {
                 s.AvailableStock = catalogItemsStock.AvailableStock;
