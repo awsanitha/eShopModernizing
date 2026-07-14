@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using eShopWCFService.Models;
+using CoreWCF;
 
 namespace eShopWCFService
 {
@@ -33,9 +32,9 @@ namespace eShopWCFService
             return base.Channel.GetCatalogBrands();
         }
 
-        public List<CatalogItem> GetCatalogItems()
+        public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
         {
-            return base.Channel.GetCatalogItems();
+            return base.Channel.GetCatalogItems(brandIdFilter, typeIdFilter);
         }
 
         public List<CatalogType> GetCatalogTypes()
@@ -51,6 +50,16 @@ namespace eShopWCFService
         public void UpdateCatalogItem(CatalogItem catalogItem)
         {
             base.Channel.UpdateCatalogItem(catalogItem);
+        }
+
+        public DiscountItem GetDiscount(DateTime day)
+        {
+            return base.Channel.GetDiscount(day);
+        }
+
+        public void Dispose()
+        {
+            try { base.Close(); } catch { base.Abort(); }
         }
     }
 }
