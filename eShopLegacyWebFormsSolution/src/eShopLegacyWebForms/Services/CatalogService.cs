@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using eShopLegacyWebForms.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using eShopLegacyWebForms.ViewModel;
 
@@ -35,10 +34,11 @@ namespace eShopLegacyWebForms.Services
                 pageIndex, pageSize, totalItems, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
             return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id);
         }
+
         public IEnumerable<CatalogType> GetCatalogTypes()
         {
             return db.CatalogTypes.ToList();
