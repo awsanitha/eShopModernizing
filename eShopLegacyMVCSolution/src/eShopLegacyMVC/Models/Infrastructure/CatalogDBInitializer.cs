@@ -304,7 +304,11 @@ namespace eShopLegacyMVC.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dbSequenceName)
         {
+            // dbSequenceName is always one of two compile-time constants (DBCatalogSequenceName / DBBrandSequenceName)
+            // so interpolation here is safe; suppress the EF1002 SQL-injection advisory.
+#pragma warning disable EF1002
             var rawQuery = context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dbSequenceName}");
+#pragma warning restore EF1002
             var sequenceId = (int)rawQuery.Single();
             return sequenceId;
         }
