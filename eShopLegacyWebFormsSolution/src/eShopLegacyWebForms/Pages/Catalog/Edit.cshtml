@@ -1,0 +1,105 @@
+@page "{id:int}"
+@model eShopLegacyWebForms.Pages.Catalog.EditModel
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2 class="esh-body-title">Edit</h2>
+
+<div class="container">
+    <div class="row">
+        <img class="col-md-6 esh-picture" src="/Pics/@Model.CatalogItem.PictureFileName" />
+        <div class="col-md-6 form-horizontal">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="CatalogItem.Id" />
+                <input type="hidden" asp-for="CatalogItem.PictureFileName" />
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Name</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.Name" class="form-control" />
+                        <span asp-validation-for="CatalogItem.Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Description</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.Description" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Brand</label>
+                    <div class="col-md-8">
+                        <select asp-for="CatalogItem.CatalogBrandId"
+                                asp-items="@(new SelectList(Model.Brands, "Id", "Brand", Model.CatalogItem.CatalogBrandId))"
+                                class="form-control">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Type</label>
+                    <div class="col-md-8">
+                        <select asp-for="CatalogItem.CatalogTypeId"
+                                asp-items="@(new SelectList(Model.Types, "Id", "Type", Model.CatalogItem.CatalogTypeId))"
+                                class="form-control">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Price</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.Price" class="form-control" />
+                        <span asp-validation-for="CatalogItem.Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Picture name</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.PictureFileName" class="form-control" readonly="readonly" title="Not allowed for edition" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Stock</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.AvailableStock" class="form-control" />
+                        <span asp-validation-for="CatalogItem.AvailableStock" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Restock</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.RestockThreshold" class="form-control" />
+                        <span asp-validation-for="CatalogItem.RestockThreshold" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-4">Max stock</label>
+                    <div class="col-md-8">
+                        <input asp-for="CatalogItem.MaxStockThreshold" class="form-control" />
+                        <span asp-validation-for="CatalogItem.MaxStockThreshold" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-12 text-right esh-button-actions">
+                        <a asp-page="/Index" class="btn esh-button esh-button-secondary">[ Cancel ]</a>
+                        <button type="submit" class="btn esh-button esh-button-primary">[ Save ]</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
