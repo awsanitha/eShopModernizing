@@ -1,8 +1,6 @@
-﻿using eShopLegacyMVC.Models;
+using eShopLegacyMVC.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace eShopLegacyMVC.Models
 {
@@ -19,8 +17,8 @@ namespace eShopLegacyMVC.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    var result = db.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR catalog_hilo;");
+                    sequenceId = (int)System.Linq.Enumerable.Single(result);
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }
