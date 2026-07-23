@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using eShopLegacyWebForms.Models;
 using eShopLegacyWebForms.Models.Infrastructure;
 using eShopLegacyWebForms.ViewModel;
@@ -9,17 +6,17 @@ namespace eShopLegacyWebForms.Services
 {
     public class CatalogServiceMock : ICatalogService
     {
-        private List<CatalogItem> catalogItems;
+        private List<CatalogItem> _catalogItems;
 
         public CatalogServiceMock()
         {
-            catalogItems = new List<CatalogItem>(PreconfiguredData.GetPreconfiguredCatalogItems());
+            _catalogItems = new List<CatalogItem>(PreconfiguredData.GetPreconfiguredCatalogItems());
         }
 
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
         {
-            var items = ComposeCatalogItems(catalogItems);
-            
+            var items = ComposeCatalogItems(_catalogItems);
+
             var itemsOnPage = items
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
@@ -30,9 +27,9 @@ namespace eShopLegacyWebForms.Services
                 pageIndex, pageSize, items.Count, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
+            return _catalogItems.FirstOrDefault(x => x.Id == id);
         }
 
         public IEnumerable<CatalogType> GetCatalogTypes()
@@ -47,9 +44,9 @@ namespace eShopLegacyWebForms.Services
 
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
-            var maxId = catalogItems.Max(i => i.Id);
+            var maxId = _catalogItems.Max(i => i.Id);
             catalogItem.Id = ++maxId;
-            catalogItems.Add(catalogItem);
+            _catalogItems.Add(catalogItem);
         }
 
         public void UpdateCatalogItem(CatalogItem modifiedItem)
@@ -57,13 +54,13 @@ namespace eShopLegacyWebForms.Services
             var originalItem = FindCatalogItem(modifiedItem.Id);
             if (originalItem != null)
             {
-                catalogItems[catalogItems.IndexOf(originalItem)] = modifiedItem;
+                _catalogItems[_catalogItems.IndexOf(originalItem)] = modifiedItem;
             }
         }
 
         public void RemoveCatalogItem(CatalogItem catalogItem)
         {
-            catalogItems.Remove(catalogItem);
+            _catalogItems.Remove(catalogItem);
         }
 
         public void Dispose()
@@ -72,13 +69,11 @@ namespace eShopLegacyWebForms.Services
 
         private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
         {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
+            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes().ToList();
+            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands().ToList();
             items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
             items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
-
             return items;
-            ;
         }
     }
 }
