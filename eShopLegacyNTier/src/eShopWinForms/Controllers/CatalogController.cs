@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using eShopWinForms.eShopServiceReference;
 using System;
@@ -8,8 +8,8 @@ namespace eShopWinForms.Controllers
     public class CatalogController
     {
         /*Reference to the service (for fetching data) and the view (so we can tell the view how to update)*/
-        private ICatalogService _service;
-        private ICatalogView _view;
+        private readonly ICatalogService _service;
+        private readonly ICatalogView _view;
 
         public CatalogController(ICatalogService service, ICatalogView view)
         {
@@ -44,13 +44,12 @@ namespace eShopWinForms.Controllers
         }
 
         /*
-         * Gets the number of stock available for a given item and date, then updates the 
+         * Gets the number of stock available for a given item and date, then updates the
          * view to reflect the result.
          */
         private void searchStockAvailable(ICatalogView view, SearchStockEventArgs e)
         {
             int res = _service.GetAvailableStock(e.date, e.itemId);
-
             _view.ShowStockAvailability(e, res);
         }
 
@@ -64,7 +63,7 @@ namespace eShopWinForms.Controllers
             if (discount != null)
             {
                 discountPercentage = Math.Round(discount.Size * 100, 0);
-                String bannerText = String.Format("{0}% sale endson {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
+                String bannerText = String.Format("{0}% sale ends on {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
                 _view.SetDiscountBanner(bannerText);
             }
         }
@@ -83,7 +82,6 @@ namespace eShopWinForms.Controllers
 
             _view.SetCatalogItems(items, discountVal);
         }
-
 
         private void SetShipmentView()
         {
@@ -110,7 +108,7 @@ namespace eShopWinForms.Controllers
             foreach (var catalogBrand in brands)
             {
                 int idValue = catalogBrand.Id;
-                string typeValue = catalogBrand.Brand;
+                string typeValue = catalogBrand.Brand ?? string.Empty;
                 brandDictionary.Add(idValue, typeValue);
             }
 
@@ -136,7 +134,7 @@ namespace eShopWinForms.Controllers
             foreach (var catalogtype in types)
             {
                 int idValue = catalogtype.Id;
-                string typeValue = catalogtype.Type;
+                string typeValue = catalogtype.Type ?? string.Empty;
                 typeDictionary.Add(idValue, typeValue);
             }
 
@@ -145,7 +143,7 @@ namespace eShopWinForms.Controllers
 
         /*
          * Called at the beginning of the lifecycle of the controller
-         * to set up our view and get all inital data
+         * to set up our view and get all initial data
          */
         public void LoadView()
         {
