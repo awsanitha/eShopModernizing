@@ -1,42 +1,43 @@
-﻿using eShopPorted.Services;
+using eShopPorted.Services;
 using log4net;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using System.Net;
-using System.Web.Mvc;
 
 namespace eShopPorted.Controllers
 {
     public class PicController : Controller
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
 
         public const string GetPicRouteName = "GetPicRouteTemplate";
 
-        private ICatalogService service;
+        private readonly ICatalogService _service;
+        private readonly IWebHostEnvironment _env;
 
-        public PicController(ICatalogService service)
+        public PicController(ICatalogService service, IWebHostEnvironment env)
         {
-            this.service = service;
+            _service = service;
+            _env = env;
         }
 
         // GET: Pic/5.png
         [HttpGet]
         [Route("items/{catalogItemId:int}/pic", Name = GetPicRouteName)]
-        public ActionResult Index(int catalogItemId)
+        public IActionResult Index(int catalogItemId)
         {
             _log.Info($"Now loading... /items/Index?{catalogItemId}/pic");
 
             if (catalogItemId <= 0)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
-            var item = service.FindCatalogItem(catalogItemId);
+            var item = _service.FindCatalogItem(catalogItemId);
 
             if (item != null)
             {
-                var webRoot = "";
-                //var webRoot = Server.MapPath("~/Pics");
+                var webRoot = Path.Combine(_env.WebRootPath, "Pics");
                 var path = Path.Combine(webRoot, item.PictureFileName);
 
                 string imageFileExtension = Path.GetExtension(item.PictureFileName);
@@ -47,7 +48,7 @@ namespace eShopPorted.Controllers
                 return File(buffer, mimetype);
             }
 
-            return HttpNotFound();
+            return NotFound();
         }
 
         private string GetImageMimeTypeFromImageFileExtension(string extension)
