@@ -1,8 +1,5 @@
-﻿using eShopLegacyWebForms.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using eShopLegacyWebForms.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopLegacyWebForms.Models
 {
@@ -11,7 +8,7 @@ namespace eShopLegacyWebForms.Models
         private const int HiLoIncrement = 10;
         private int sequenceId = -1;
         private int remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private readonly object sequenceLock = new object();
 
         public int GetNextSequenceValue(CatalogDBContext db)
         {
@@ -19,8 +16,13 @@ namespace eShopLegacyWebForms.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    var connection = db.Database.GetDbConnection();
+                    if (connection.State != System.Data.ConnectionState.Open)
+                        connection.Open();
+                    using var command = connection.CreateCommand();
+                    command.CommandText = "SELECT NEXT VALUE FOR catalog_hilo";
+                    var value = command.ExecuteScalar();
+                    sequenceId = (int)(long)value!;
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }
