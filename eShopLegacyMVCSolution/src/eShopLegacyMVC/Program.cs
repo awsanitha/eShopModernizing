@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
 
-namespace eShopPorted
+namespace eShopLegacyMVC
 {
     public class Program
     {

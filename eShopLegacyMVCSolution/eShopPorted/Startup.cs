@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using eShopPorted.Models;
 using eShopPorted.Modules;
@@ -13,26 +13,28 @@ namespace eShopPorted
 {
     public class Startup
     {
+        public static DateTime StartTime { get; } = DateTime.UtcNow;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-        public static DateTime StartTime { get; } = DateTime.UtcNow;
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllersWithViews();
+
             bool useMockData = Configuration.GetValue<bool>("UseMockData");
             if (!useMockData)
             {
-                string connectionString = Configuration.GetConnectionString("DefaultConnection");
+                string connectionString = Configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("No database connection string configured.");
 
                 services.AddDbContext<CatalogDBContext>(options =>
-                    options.UseSqlServer(connectionString)
-                );
+                    options.UseSqlServer(connectionString));
             }
 
             // Create Autofac container builder
@@ -41,12 +43,11 @@ namespace eShopPorted
             builder.RegisterModule(new ApplicationModule(useMockData));
 
             ILifetimeScope container = builder.Build();
-
             return new AutofacServiceProvider(container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -58,10 +59,13 @@ namespace eShopPorted
             }
 
             app.UseStaticFiles();
+            app.UseRouting();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute("default", "{controller=Catalog}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Catalog}/{action=Index}/{id?}");
             });
         }
     }
