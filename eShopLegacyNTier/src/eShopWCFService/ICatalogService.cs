@@ -1,19 +1,16 @@
-﻿using eShopWCFService.Models;
+using CoreWCF;
+using eShopWCFService.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IService1" in both code and config file together.
     [ServiceContract]
     public interface ICatalogService : IDisposable
     {
         [OperationContract]
-        CatalogItem FindCatalogItem(int id);
+        CatalogItem? FindCatalogItem(int id);
         [OperationContract]
         List<CatalogBrand> GetCatalogBrands();
         [OperationContract]
@@ -21,7 +18,7 @@ namespace eShopWCFService
         [OperationContract]
         List<CatalogType> GetCatalogTypes();
         [OperationContract]
-        int GetAvailableStock(System.DateTime date, int catalogItemId);
+        int GetAvailableStock(DateTime date, int catalogItemId);
         [OperationContract]
         void CreateAvailableStock(CatalogItemsStock catalogItemsStock);
         [OperationContract]
@@ -31,6 +28,6 @@ namespace eShopWCFService
         [OperationContract]
         void RemoveCatalogItem(CatalogItem catalogItem);
         [OperationContract]
-        DiscountItem GetDiscount(DateTime day);
+        DiscountItem? GetDiscount(DateTime day);
     }
 }
