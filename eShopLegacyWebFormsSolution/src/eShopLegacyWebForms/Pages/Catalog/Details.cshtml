@@ -1,0 +1,47 @@
+@page "/Catalog/Details/{id:int}"
+@model eShopLegacyWebForms.Pages.Catalog.DetailsModel
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2 class="esh-body-title">Details</h2>
+
+<div class="container">
+    <div class="row">
+        <img class="col-md-6 esh-picture" src="/Pics/@Model.CatalogItem.PictureFileName" />
+        <dl class="col-md-6 dl-horizontal">
+            <dt>Name</dt>
+            <dd>@Model.CatalogItem.Name</dd>
+
+            <dt>Description</dt>
+            <dd>@Model.CatalogItem.Description</dd>
+
+            <dt>Brand</dt>
+            <dd>@Model.CatalogItem.CatalogBrand.Brand</dd>
+
+            <dt>Type</dt>
+            <dd>@Model.CatalogItem.CatalogType.Type</dd>
+
+            <dt>Price</dt>
+            <dd><span class="esh-price">@Model.CatalogItem.Price</span></dd>
+
+            <dt>Picture name</dt>
+            <dd>@Model.CatalogItem.PictureFileName</dd>
+
+            <dt>Stock</dt>
+            <dd>@Model.CatalogItem.AvailableStock</dd>
+
+            <dt>Restock</dt>
+            <dd>@Model.CatalogItem.RestockThreshold</dd>
+
+            <dt>Max stock</dt>
+            <dd>@Model.CatalogItem.MaxStockThreshold</dd>
+        </dl>
+    </div>
+
+    <div class="form-actions no-color esh-link-list">
+        <a href="/Catalog/Edit/@Model.CatalogItem.Id" class="esh-link-item">Edit</a>
+        |
+        <a href="/" class="esh-link-item">Back to list</a>
+    </div>
+</div>
