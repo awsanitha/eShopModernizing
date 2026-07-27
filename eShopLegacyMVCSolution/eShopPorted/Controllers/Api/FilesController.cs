@@ -36,7 +36,7 @@ namespace eShopPorted.Controllers
         public class BrandDTO
         {
             public int Id { get; set; }
-            public string Brand { get; set; }
+            public string? Brand { get; set; }
         }
     }
 }

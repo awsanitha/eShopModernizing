@@ -1,6 +1,6 @@
 using Autofac;
-using eShopPorted.Models;
-using eShopPorted.Modules;
+using eShopLegacyMVC.Models;
+using eShopLegacyMVC.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace eShopPorted
+namespace eShopLegacyMVC
 {
     public class Startup
     {
@@ -22,7 +22,6 @@ namespace eShopPorted
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -36,14 +35,12 @@ namespace eShopPorted
             }
         }
 
-        // ConfigureContainer is called by Autofac after ConfigureServices
         public void ConfigureContainer(ContainerBuilder builder)
         {
             bool useMockData = Configuration.GetValue<bool>("UseMockData");
             builder.RegisterModule(new ApplicationModule(useMockData));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
