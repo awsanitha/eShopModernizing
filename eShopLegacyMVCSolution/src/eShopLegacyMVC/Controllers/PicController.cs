@@ -1,91 +1,80 @@
-﻿using eShopLegacyMVC.Services;
-using log4net;
+using eShopLegacyMVC.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.IO;
-using System.Net;
-using System.Web.Mvc;
 
 namespace eShopLegacyMVC.Controllers
 {
     public class PicController : Controller
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+        private readonly ILogger<PicController> _logger;
         public const string GetPicRouteName = "GetPicRouteTemplate";
 
-        private ICatalogService service;
+        private readonly ICatalogService service;
+        private readonly IWebHostEnvironment environment;
 
-        public PicController(ICatalogService service)
+        public PicController(ICatalogService service, IWebHostEnvironment environment, ILogger<PicController> logger)
         {
             this.service = service;
+            this.environment = environment;
+            _logger = logger;
         }
 
-        // GET: Pic/5.png
+        // GET: items/5/pic
         [HttpGet]
         [Route("items/{catalogItemId:int}/pic", Name = GetPicRouteName)]
-        public ActionResult Index(int catalogItemId)
+        public IActionResult Index(int catalogItemId)
         {
-            _log.Info($"Now loading... /items/Index?{catalogItemId}/pic");
+            _logger.LogInformation("Now loading... /items/{CatalogItemId}/pic", catalogItemId);
 
             if (catalogItemId <= 0)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             var item = service.FindCatalogItem(catalogItemId);
 
             if (item != null)
             {
-                var webRoot = Server.MapPath("~/Pics");
-                var path = Path.Combine(webRoot, item.PictureFileName);
+                // Try wwwroot/Pics first, then the content root Pics folder
+                string picsRoot = Path.Combine(environment.WebRootPath ?? environment.ContentRootPath, "Pics");
+                if (!Directory.Exists(picsRoot))
+                {
+                    picsRoot = Path.Combine(environment.ContentRootPath, "Pics");
+                }
+
+                var path = Path.Combine(picsRoot, item.PictureFileName);
+
+                if (!System.IO.File.Exists(path))
+                {
+                    return NotFound();
+                }
 
                 string imageFileExtension = Path.GetExtension(item.PictureFileName);
                 string mimetype = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
 
                 var buffer = System.IO.File.ReadAllBytes(path);
-
                 return File(buffer, mimetype);
             }
 
-            return HttpNotFound();
+            return NotFound();
         }
 
-        private string GetImageMimeTypeFromImageFileExtension(string extension)
+        private static string GetImageMimeTypeFromImageFileExtension(string extension)
         {
-            string mimetype;
-
-            switch (extension)
+            return extension switch
             {
-                case ".png":
-                    mimetype = "image/png";
-                    break;
-                case ".gif":
-                    mimetype = "image/gif";
-                    break;
-                case ".jpg":
-                case ".jpeg":
-                    mimetype = "image/jpeg";
-                    break;
-                case ".bmp":
-                    mimetype = "image/bmp";
-                    break;
-                case ".tiff":
-                    mimetype = "image/tiff";
-                    break;
-                case ".wmf":
-                    mimetype = "image/wmf";
-                    break;
-                case ".jp2":
-                    mimetype = "image/jp2";
-                    break;
-                case ".svg":
-                    mimetype = "image/svg+xml";
-                    break;
-                default:
-                    mimetype = "application/octet-stream";
-                    break;
-            }
-
-            return mimetype;
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".bmp" => "image/bmp",
+                ".tiff" => "image/tiff",
+                ".wmf" => "image/wmf",
+                ".jp2" => "image/jp2",
+                ".svg" => "image/svg+xml",
+                _ => "application/octet-stream",
+            };
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model eShopPorted.ViewModel.PaginatedItemsViewModel<eShopPorted.Models.CatalogItem>
+@model eShopPorted.ViewModel.PaginatedItemsViewModel<eShopPorted.Models.CatalogItem>
 
 @{
     ViewBag.Title = "Index";
@@ -9,7 +9,7 @@
         @Html.ActionLink("Create New", "Create", null, new { @class = "btn esh-button esh-button-primary" })
     </p>
 
-    @Html.Partial("CatalogTable", Model.Data)
+    <partial name="CatalogTable" model="Model.Data" />
 
     <div class="esh-pager">
         <div class="container">
@@ -38,9 +38,8 @@
                         @Html.ActionLink("Next", "Index", new { pageSize = Model.ItemsPerPage, pageIndex = Model.ActualPage + 1 }, new { @class = "esh-pager-item esh-pager-item--navigable esh-pager-item--hidden" })
                     }
 
-            </nav>
-        </article>
+                </nav>
+            </article>
+        </div>
     </div>
-</div>
-
 </div>
