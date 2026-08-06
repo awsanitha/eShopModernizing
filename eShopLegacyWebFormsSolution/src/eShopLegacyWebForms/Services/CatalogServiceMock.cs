@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using eShopLegacyWebForms.Models;
 using eShopLegacyWebForms.Models.Infrastructure;
 using eShopLegacyWebForms.ViewModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace eShopLegacyWebForms.Services
 {
@@ -19,7 +19,7 @@ namespace eShopLegacyWebForms.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
         {
             var items = ComposeCatalogItems(catalogItems);
-            
+
             var itemsOnPage = items
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
@@ -30,7 +30,7 @@ namespace eShopLegacyWebForms.Services
                 pageIndex, pageSize, items.Count, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
             return catalogItems.FirstOrDefault(x => x.Id == id);
         }
@@ -68,17 +68,17 @@ namespace eShopLegacyWebForms.Services
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
 
-        private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
+        private static List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
         {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
+            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes().ToList();
+            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands().ToList();
             items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
             items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
 
             return items;
-            ;
         }
     }
 }
