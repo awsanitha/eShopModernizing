@@ -1,81 +1,70 @@
-﻿using eShopWCFService;
-using eShopWCFService.Models.Infrastructure;
+using eShopWCFService.Models;
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web;
 
 namespace eShopWCFService.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<EntityModel>
+    /// <summary>
+    /// EF Core-compatible database initializer.
+    /// Replaces the EF6 CreateDatabaseIfNotExists&lt;T&gt; initializer pattern.
+    /// Call Initialize() from Program.cs at startup after DI is resolved.
+    /// </summary>
+    public static class CatalogDBInitializer
     {
-        protected override void Seed(EntityModel context)
+        public static void Initialize(EntityModel context)
         {
-            AddCatalogTypes(context);
-            AddCatalogBrands(context);
-            AddCatalogItems(context);
-            AddCatalogItemsStock(context);
-            AddDiscountItems(context);
+            // Creates the database if it doesn't exist (equivalent to CreateDatabaseIfNotExists)
+            context.Database.EnsureCreated();
+
+            // Seed data only if the tables are empty
+            if (!context.CatalogTypes.Any())
+                AddCatalogTypes(context);
+
+            if (!context.CatalogBrands.Any())
+                AddCatalogBrands(context);
+
+            if (!context.CatalogItems.Any())
+                AddCatalogItems(context);
+
+            if (!context.CatalogItemsStocks.Any())
+                AddCatalogItemsStock(context);
+
+            if (!context.DiscountItems.Any())
+                AddDiscountItems(context);
         }
 
-        private void AddCatalogTypes(EntityModel context)
+        private static void AddCatalogTypes(EntityModel context)
         {
-            var preconfiguredTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-
-            foreach (var type in preconfiguredTypes)
-            {
+            foreach (var type in PreconfiguredData.GetPreconfiguredCatalogTypes())
                 context.CatalogTypes.Add(type);
-            }
-
             context.SaveChanges();
         }
 
-        private void AddCatalogBrands(EntityModel context)
+        private static void AddCatalogBrands(EntityModel context)
         {
-            var preconfiguredBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-
-            foreach (var brand in preconfiguredBrands)
-            {
+            foreach (var brand in PreconfiguredData.GetPreconfiguredCatalogBrands())
                 context.CatalogBrands.Add(brand);
-            }
-
             context.SaveChanges();
         }
 
-        private void AddDiscountItems(EntityModel context)
+        private static void AddDiscountItems(EntityModel context)
         {
-            var preconfiguredDiscounts = PreconfiguredData.GetPreconfiguredDiscountItems();
-
-            foreach (var discount in preconfiguredDiscounts)
-            {
+            foreach (var discount in PreconfiguredData.GetPreconfiguredDiscountItems())
                 context.DiscountItems.Add(discount);
-            }
-
             context.SaveChanges();
         }
 
-        private void AddCatalogItems(EntityModel context)
+        private static void AddCatalogItems(EntityModel context)
         {
-            var preconfiguredItems = PreconfiguredData.GetPreconfiguredCatalogItems();
-
-            foreach (var item in preconfiguredItems)
-            {
+            foreach (var item in PreconfiguredData.GetPreconfiguredCatalogItems())
                 context.CatalogItems.Add(item);
-            }
-
             context.SaveChanges();
         }
 
-        private void AddCatalogItemsStock(EntityModel context)
+        private static void AddCatalogItemsStock(EntityModel context)
         {
-            var preconfiguredStock = PreconfiguredData.GetPreconfiguredCatalogItemsStock();
-
-            foreach (var s in preconfiguredStock)
-            {
+            foreach (var s in PreconfiguredData.GetPreconfiguredCatalogItemsStock())
                 context.CatalogItemsStocks.Add(s);
-            }
-
             context.SaveChanges();
         }
     }

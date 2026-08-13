@@ -1,25 +1,24 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
+using CoreWCF;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "CatalogService" in both code and config file together.
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
 
+        // Parameterless constructor for direct instantiation (non-DI usage)
         public CatalogService()
         {
             ents = new EntityModel();
         }
 
+        // DI constructor — preferred when CoreWCF resolves the service via IServiceCollection
         public CatalogService(EntityModel ents)
         {
             this.ents = ents;
@@ -27,22 +26,22 @@ namespace eShopWCFService
 
         public DiscountItem GetDiscount(DateTime _day)
         {
-            return ents.DiscountItems.ToList().Where(y => y.Start.Date.Date <= _day.Date.Date && y.End.Date.Date >= _day.Date.Date).FirstOrDefault();
+            return ents.DiscountItems.ToList().Where(y => y.Start.Date.Date <= _day.Date.Date && y.End.Date.Date >= _day.Date.Date).FirstOrDefault()!;
         }
 
         public CatalogItem FindCatalogItem(int id)
         {
-            CatalogItem item = ents.CatalogItems.FirstOrDefault(x => x.Id == id);
+            CatalogItem? item = ents.CatalogItems.FirstOrDefault(x => x.Id == id);
             if (item != null)
             {
-                item.CatalogBrand = ents.CatalogBrands.FirstOrDefault(x => x.Id == item.CatalogBrandId);
-                item.CatalogType = ents.CatalogTypes.FirstOrDefault(x => x.Id == item.CatalogTypeId);
-
+                item.CatalogBrand = ents.CatalogBrands.FirstOrDefault(x => x.Id == item.CatalogBrandId)!;
+                item.CatalogType = ents.CatalogTypes.FirstOrDefault(x => x.Id == item.CatalogTypeId)!;
                 return item;
             }
             else
-                return null;
+                return null!;
         }
+
         public List<CatalogType> GetCatalogTypes()
         {
             return ents.CatalogTypes.ToList();
@@ -89,7 +88,7 @@ namespace eShopWCFService
 
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            CatalogItemsStock s = ents.CatalogItemsStocks.Where(x => x.CatalogItemId == catalogItemId).ToList().Where(y => y.Date.Date == date.Date).FirstOrDefault();
+            CatalogItemsStock? s = ents.CatalogItemsStocks.Where(x => x.CatalogItemId == catalogItemId).ToList().Where(y => y.Date.Date == date.Date).FirstOrDefault();
             if (s != null)
                 return s.AvailableStock;
             else
@@ -98,10 +97,9 @@ namespace eShopWCFService
 
         public void CreateAvailableStock(CatalogItemsStock catalogItemsStock)
         {
-            CatalogItemsStock s = ents.CatalogItemsStocks.Where(x => x.CatalogItemId == catalogItemsStock.CatalogItemId).ToList()
+            CatalogItemsStock? s = ents.CatalogItemsStocks.Where(x => x.CatalogItemId == catalogItemsStock.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == catalogItemsStock.Date.Date).FirstOrDefault();
 
-            /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
             if (s != null)
             {
                 s.AvailableStock = catalogItemsStock.AvailableStock;
