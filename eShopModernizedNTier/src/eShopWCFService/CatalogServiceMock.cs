@@ -1,10 +1,8 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWCFService
 {
@@ -74,10 +72,10 @@ namespace eShopWCFService
 
         private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
         {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-            items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
-            items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
+            var catalogTypesLocal = PreconfiguredData.GetPreconfiguredCatalogTypes();
+            var catalogBrandsLocal = PreconfiguredData.GetPreconfiguredCatalogBrands();
+            items.ForEach(i => i.CatalogBrand = catalogBrandsLocal.First(b => b.Id == i.CatalogBrandId));
+            items.ForEach(i => i.CatalogType = catalogTypesLocal.First(b => b.Id == i.CatalogTypeId));
 
             return items;
         }

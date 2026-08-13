@@ -1,24 +1,17 @@
-﻿using eShopWCFService.Models;
+using CoreWCF;
+using eShopWCFService.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
 
 namespace eShopWCFService
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "CatalogService" in both code and config file together.
     public class CatalogService : ICatalogService
     {
-        private EntityModel ents;
-
-        public CatalogService()
-        {
-            ents = new EntityModel();
-        }
+        private readonly EntityModel ents;
 
         public CatalogService(EntityModel ents)
         {
@@ -84,7 +77,8 @@ namespace eShopWCFService
 
         public void Dispose()
         {
-            ents.Dispose();
+            // EntityModel lifetime is managed by the DI container (scoped).
+            // Do not dispose it here to avoid use-after-dispose errors.
         }
 
         public int GetAvailableStock(DateTime date, int catalogItemId)
