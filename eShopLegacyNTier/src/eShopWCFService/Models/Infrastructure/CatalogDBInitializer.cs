@@ -1,17 +1,21 @@
-﻿using eShopWCFService;
 using eShopWCFService.Models.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web;
 
 namespace eShopWCFService.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<EntityModel>
+    /// <summary>
+    /// Responsible for seeding the database with preconfigured data if it is empty.
+    /// Called once at application startup after EnsureCreated().
+    /// Replaces the EF6 CreateDatabaseIfNotExists initializer pattern.
+    /// </summary>
+    public static class CatalogDBInitializer
     {
-        protected override void Seed(EntityModel context)
+        public static void Seed(eShopWCFService.EntityModel context)
         {
+            // Only seed if the database is empty
+            if (context.CatalogTypes.Any())
+                return;
+
             AddCatalogTypes(context);
             AddCatalogBrands(context);
             AddCatalogItems(context);
@@ -19,7 +23,7 @@ namespace eShopWCFService.Models.Infrastructure
             AddDiscountItems(context);
         }
 
-        private void AddCatalogTypes(EntityModel context)
+        private static void AddCatalogTypes(eShopWCFService.EntityModel context)
         {
             var preconfiguredTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
 
@@ -31,7 +35,7 @@ namespace eShopWCFService.Models.Infrastructure
             context.SaveChanges();
         }
 
-        private void AddCatalogBrands(EntityModel context)
+        private static void AddCatalogBrands(eShopWCFService.EntityModel context)
         {
             var preconfiguredBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
 
@@ -43,7 +47,7 @@ namespace eShopWCFService.Models.Infrastructure
             context.SaveChanges();
         }
 
-        private void AddDiscountItems(EntityModel context)
+        private static void AddDiscountItems(eShopWCFService.EntityModel context)
         {
             var preconfiguredDiscounts = PreconfiguredData.GetPreconfiguredDiscountItems();
 
@@ -55,7 +59,7 @@ namespace eShopWCFService.Models.Infrastructure
             context.SaveChanges();
         }
 
-        private void AddCatalogItems(EntityModel context)
+        private static void AddCatalogItems(eShopWCFService.EntityModel context)
         {
             var preconfiguredItems = PreconfiguredData.GetPreconfiguredCatalogItems();
 
@@ -67,7 +71,7 @@ namespace eShopWCFService.Models.Infrastructure
             context.SaveChanges();
         }
 
-        private void AddCatalogItemsStock(EntityModel context)
+        private static void AddCatalogItemsStock(eShopWCFService.EntityModel context)
         {
             var preconfiguredStock = PreconfiguredData.GetPreconfiguredCatalogItemsStock();
 
