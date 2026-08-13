@@ -1,15 +1,17 @@
-﻿using System.Web;
 using eShopModernizedWebForms.Models;
-using System.IO;
 
 namespace eShopModernizedWebForms.Services
 {
     public class ImageMockStorage : IImageService
     {
-        public string BaseUrl()
+        private readonly IWebHostEnvironment _env;
+
+        public ImageMockStorage(IWebHostEnvironment env)
         {
-            return GetBaseUrlImages();
+            _env = env;
         }
+
+        public string BaseUrl() => GetBaseUrlImages();
 
         public string BuildUrlImage(CatalogItem item)
         {
@@ -17,44 +19,28 @@ namespace eShopModernizedWebForms.Services
             return GetBaseUrlImages() + pictureFileName;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() { }
 
-        }
+        public void InitializeCatalogImages() { }
 
-        public void InitializeCatalogImages()
-        {
+        public void UpdateImage(CatalogItem item) { }
 
-        }
-
-        public void UpdateImage(CatalogItem item)
-        {
-
-        }
-
-        public string UploadTempImage(HttpPostedFile file, int? catalogItemId)
+        public string UploadTempImage(IFormFile file, int? catalogItemId)
         {
             if (!catalogItemId.HasValue)
                 return UrlDefaultImage();
 
-            var pathPics = HttpContext.Current.Server.MapPath("~/Pics");
-            var imageExists = File.Exists(Path.Combine(pathPics, catalogItemId.Value + ".png"));
+            var picsPath = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "Pics");
+            var imageExists = File.Exists(Path.Combine(picsPath, catalogItemId.Value + ".png"));
 
             if (imageExists)
                 return BaseUrl() + catalogItemId.Value + ".png";
 
-
             return UrlDefaultImage();
         }
 
-        public string UrlDefaultImage()
-        {
-            return GetBaseUrlImages() + "default.png";
-        }
+        public string UrlDefaultImage() => GetBaseUrlImages() + "default.png";
 
-        private string GetBaseUrlImages()
-        {
-            return "/Pics/";
-        }
+        private static string GetBaseUrlImages() => "/Pics/";
     }
 }

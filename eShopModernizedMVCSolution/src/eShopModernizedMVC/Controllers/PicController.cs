@@ -1,20 +1,13 @@
-﻿using eShopModernizedMVC.Services;
+using eShopModernizedMVC.Services;
 using log4net;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace eShopModernizedMVC.Controllers
 {
     public class PicController : Controller
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(PicController));
 
-        private static readonly ImageFormat[] ValidFormats = { ImageFormat.Jpeg, ImageFormat.Png, ImageFormat.Gif };
         private readonly IImageService _imageService;
 
         public PicController(ICatalogService service, IImageService imageService)
@@ -24,19 +17,18 @@ namespace eShopModernizedMVC.Controllers
 
         [HttpPost]
         [Route("uploadimage")]
-        public ActionResult UploadImage()
+        public IActionResult UploadImage([FromForm] IFormFile? HelpSectionImages, [FromForm] string? itemId)
         {
-            _log.Info($"Now processing... /Pic/UploadImage");
-            HttpPostedFile image = System.Web.HttpContext.Current.Request.Files["HelpSectionImages"];
-            var itemId = System.Web.HttpContext.Current.Request.Form["itemId"];
+            _log.Info("Now processing... /Pic/UploadImage");
 
-            if (!IsValidImage(image))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "image is not valid");
-            }
+            if (HelpSectionImages == null || HelpSectionImages.Length == 0)
+                return BadRequest("image is not valid");
+
+            if (!IsValidImage(HelpSectionImages))
+                return BadRequest("image is not valid");
 
             int.TryParse(itemId, out var catalogItemId);
-            var urlImageTemp = _imageService.UploadTempImage(image, catalogItemId);
+            var urlImageTemp = _imageService.UploadTempImage(HelpSectionImages, catalogItemId > 0 ? catalogItemId : (int?)null);
             var tempImage = new
             {
                 name = new Uri(urlImageTemp).PathAndQuery,
@@ -46,23 +38,12 @@ namespace eShopModernizedMVC.Controllers
             return Json(tempImage);
         }
 
-        private bool IsValidImage(HttpPostedFile file)
+        private static bool IsValidImage(IFormFile file)
         {
-            bool isValidImage = true;
-            try
-            {
-                using (var img = Image.FromStream(file.InputStream))
-                {
-                    isValidImage = ValidFormats.Contains(img.RawFormat);
-                }
-            }
-            catch (Exception)
-            {
-                isValidImage = false;
-            }
-
-            return isValidImage;
+            // Check by extension and content type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+            return allowedExtensions.Contains(ext);
         }
-
     }
 }

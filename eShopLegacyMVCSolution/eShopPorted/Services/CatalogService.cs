@@ -36,7 +36,7 @@ namespace eShopPorted.Services
             return db.CatalogItems
                 .Include(c => c.CatalogBrand)
                 .Include(c => c.CatalogType)
-                .FirstOrDefault(ci => ci.Id == id);
+                .FirstOrDefault(ci => ci.Id == id)!;
         }
         public IEnumerable<CatalogType> GetCatalogTypes()
         {

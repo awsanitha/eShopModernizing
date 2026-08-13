@@ -1,32 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopWCFService.Models
 {
     public class CatalogItemHiLoGenerator
     {
         private const int HiLoIncrement = 10;
-        private int sequenceId = -1;
-        private int remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private int _sequenceId = -1;
+        private int _remainingLoIds = 0;
+        private readonly object _sequenceLock = new object();
 
         public int GetNextSequenceValue(EntityModel db)
         {
-            lock (sequenceLock)
+            lock (_sequenceLock)
             {
-                if (remainningLoIds == 0)
+                if (_remainingLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
-                    remainningLoIds = HiLoIncrement - 1;
-                    return sequenceId;
+                    var result = db.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR catalog_hilo;").ToList();
+                    _sequenceId = (int)result[0];
+                    _remainingLoIds = HiLoIncrement - 1;
+                    return _sequenceId;
                 }
                 else
                 {
-                    remainningLoIds--;
-                    return ++sequenceId;
+                    _remainingLoIds--;
+                    return ++_sequenceId;
                 }
             }
         }

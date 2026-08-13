@@ -1,34 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Suppress Windows platform compatibility warnings since this is a Windows-only WinForms app -->
+    <!-- Suppress CS0169 for unused fields in auto-generated Designer.cs files -->
+    <NoWarn>$(NoWarn);CA1416;CS0169</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Assets\LockScreenLogo.scale-100.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Assets\LockScreenLogo.scale-100.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="EntityFramework" Version="6.5.2" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="System.ServiceModel.Duplex" Version="4.8.0" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.8.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.0" />
-    <PackageReference Include="System.ServiceModel.Security" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
+    <!-- Pin Newtonsoft.Json to fix NU1903 vulnerability from EF6 transitive dependency -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <!-- Pin System.Security.Cryptography.Xml to patched version (10.0.0 had vulnerabilities) -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
   </ItemGroup>
-
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services" />
-  </ItemGroup>
-  
 </Project>

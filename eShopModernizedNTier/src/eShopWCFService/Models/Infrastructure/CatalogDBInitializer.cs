@@ -1,82 +1,40 @@
-﻿using eShopWCFService;
-using eShopWCFService.Models.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
+using eShopWCFService.Models;
 
 namespace eShopWCFService.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<EntityModel>
+    public class CatalogDBInitializer
     {
-        protected override void Seed(EntityModel context)
+        public static void SeedData(EntityModel context)
         {
-            AddCatalogTypes(context);
-            AddCatalogBrands(context);
-            AddCatalogItems(context);
-            AddCatalogItemsStock(context);
-            AddDiscountItems(context);
-        }
-
-        private void AddCatalogTypes(EntityModel context)
-        {
-            var preconfiguredTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-
-            foreach (var type in preconfiguredTypes)
+            if (!context.CatalogTypes.Any())
             {
-                context.CatalogTypes.Add(type);
+                context.CatalogTypes.AddRange(PreconfiguredData.GetPreconfiguredCatalogTypes());
+                context.SaveChanges();
             }
 
-            context.SaveChanges();
-        }
-
-        private void AddCatalogBrands(EntityModel context)
-        {
-            var preconfiguredBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-
-            foreach (var brand in preconfiguredBrands)
+            if (!context.CatalogBrands.Any())
             {
-                context.CatalogBrands.Add(brand);
+                context.CatalogBrands.AddRange(PreconfiguredData.GetPreconfiguredCatalogBrands());
+                context.SaveChanges();
             }
 
-            context.SaveChanges();
-        }
-
-        private void AddDiscountItems(EntityModel context)
-        {
-            var preconfiguredDiscounts = PreconfiguredData.GetPreconfiguredDiscountItems();
-
-            foreach (var discount in preconfiguredDiscounts)
+            if (!context.CatalogItems.Any())
             {
-                context.DiscountItems.Add(discount);
+                context.CatalogItems.AddRange(PreconfiguredData.GetPreconfiguredCatalogItems());
+                context.SaveChanges();
             }
 
-            context.SaveChanges();
-        }
-
-        private void AddCatalogItems(EntityModel context)
-        {
-            var preconfiguredItems = PreconfiguredData.GetPreconfiguredCatalogItems();
-
-            foreach (var item in preconfiguredItems)
+            if (!context.CatalogItemsStocks.Any())
             {
-                context.CatalogItems.Add(item);
+                context.CatalogItemsStocks.AddRange(PreconfiguredData.GetPreconfiguredCatalogItemsStock());
+                context.SaveChanges();
             }
 
-            context.SaveChanges();
-        }
-
-        private void AddCatalogItemsStock(EntityModel context)
-        {
-            var preconfiguredStock = PreconfiguredData.GetPreconfiguredCatalogItemsStock();
-
-            foreach (var s in preconfiguredStock)
+            if (!context.DiscountItems.Any())
             {
-                context.CatalogItemsStocks.Add(s);
+                context.DiscountItems.AddRange(PreconfiguredData.GetPreconfiguredDiscountItems());
+                context.SaveChanges();
             }
-
-            context.SaveChanges();
         }
     }
 }
