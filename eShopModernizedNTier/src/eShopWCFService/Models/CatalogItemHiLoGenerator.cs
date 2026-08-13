@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
-using System.Web;
 
 namespace eShopWCFService.Models
 {
@@ -18,8 +17,9 @@ namespace eShopWCFService.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    // EF Core 7+ scalar SQL query
+                    var rawQuery = db.Database.SqlQuery<long>($"SELECT NEXT VALUE FOR catalog_hilo");
+                    sequenceId = (int)rawQuery.AsEnumerable().Single();
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }
