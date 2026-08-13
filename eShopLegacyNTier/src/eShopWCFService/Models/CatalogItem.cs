@@ -4,7 +4,6 @@ namespace eShopWCFService.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
     using System.Runtime.Serialization;
 
     [DataContract]
@@ -14,24 +13,24 @@ namespace eShopWCFService.Models
         [DataMember]
         public int Id { get; set; }
         [DataMember]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [DataMember]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Column(TypeName = "money")]
         [DataMember]
         public decimal Price { get; set; }
         [DataMember]
-        public string Picturefilename { get; set; }
+        public string? Picturefilename { get; set; }
         [DataMember]
         public int CatalogBrandId { get; set; }
         [DataMember]
         public int CatalogTypeId { get; set; }
 
         [DataMember]
-        public CatalogType CatalogType { get; set; }
+        public CatalogType? CatalogType { get; set; }
 
         [DataMember]
-        public CatalogBrand CatalogBrand { get; set; }
+        public CatalogBrand? CatalogBrand { get; set; }
     }
 }

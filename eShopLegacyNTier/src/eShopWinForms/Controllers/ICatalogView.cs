@@ -64,9 +64,9 @@ namespace eShopWinForms.Controllers
     }
     public interface ICatalogView
     {
-        event ViewHandler<ICatalogView> filterChanged;
-        event AvailabilityHandler<ICatalogView> availabilityButtonClicked;
-        event SearchStockHandler<ICatalogView> searchStockButtonClicked;
+        event ViewHandler<ICatalogView>? filterChanged;
+        event AvailabilityHandler<ICatalogView>? availabilityButtonClicked;
+        event SearchStockHandler<ICatalogView>? searchStockButtonClicked;
 
         /*All of the methods we want our view to be able to do are defined below*/
         void SetController(CatalogController controller);

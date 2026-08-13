@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
 
 namespace eShopWCFService.Models.Infrastructure
 {
@@ -14,7 +11,7 @@ namespace eShopWCFService.Models.Infrastructure
             get
             {
                 var envConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
-                return envConnectionString ?? $"name={configConnectionName}";
+                return envConnectionString ?? configConnectionName;
             }
         }
     }
