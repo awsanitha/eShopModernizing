@@ -1,23 +1,24 @@
-﻿using Microsoft.Owin;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace eShopModernizedWebForms.Middleware
 {
-    public class AuthenticationMiddleware : OwinMiddleware
+    public class AuthenticationMiddleware
     {
-        public AuthenticationMiddleware(OwinMiddleware next)
-        : base(next)
+        private readonly RequestDelegate _next;
+
+        public AuthenticationMiddleware(RequestDelegate next)
         {
+            _next = next;
         }
 
-        public async override Task Invoke(IOwinContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             var identity = new ClaimsIdentity("cookies");
             identity.AddClaim(new Claim("iat", "1234"));
-            context.Authentication.User = new ClaimsPrincipal();
-            context.Authentication.User.AddIdentity(identity);
-            await Next.Invoke(context);
+            context.User = new ClaimsPrincipal(identity);
+            await _next(context);
         }
     }
 }

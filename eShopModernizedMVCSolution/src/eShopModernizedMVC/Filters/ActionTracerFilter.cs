@@ -1,14 +1,17 @@
-﻿using System.Diagnostics;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Diagnostics;
 
 namespace eShopModernizedMVC.Filters
 {
-    public class ActionTracerFilter : ActionFilterAttribute
+    public class ActionTracerFilter : IActionFilter
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public void OnActionExecuting(ActionExecutingContext context)
         {
-                Trace.TraceInformation($"Received request for action {filterContext.ActionDescriptor.ActionName} in controller {filterContext.Controller.GetType().Name}.");
-                base.OnActionExecuting(filterContext);
+            Trace.TraceInformation($"Received request for action {context.ActionDescriptor.DisplayName}.");
+        }
+
+        public void OnActionExecuted(ActionExecutedContext context)
+        {
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using eShopModernizedMVC.Models;
+using eShopModernizedMVC.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using eShopModernizedMVC.ViewModel;
 
@@ -8,8 +8,8 @@ namespace eShopModernizedMVC.Services
 {
     public class CatalogService : ICatalogService
     {
-        private CatalogDBContext db;
-        private CatalogItemHiLoGenerator indexGenerator;
+        private readonly CatalogDBContext db;
+        private readonly CatalogItemHiLoGenerator indexGenerator;
 
         public CatalogService(CatalogDBContext db, CatalogItemHiLoGenerator indexGenerator)
         {
@@ -20,7 +20,6 @@ namespace eShopModernizedMVC.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize, int pageIndex)
         {
             var totalItems = db.CatalogItems.LongCount();
-
             var itemsOnPage = db.CatalogItems
                 .Include(c => c.CatalogBrand)
                 .Include(c => c.CatalogType)
@@ -28,15 +27,17 @@ namespace eShopModernizedMVC.Services
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToList();
-
-            return new PaginatedItemsViewModel<CatalogItem>(
-                pageIndex, pageSize, totalItems, itemsOnPage);
+            return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
         }
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id);
+            return db.CatalogItems
+                .Include(c => c.CatalogBrand)
+                .Include(c => c.CatalogType)
+                .FirstOrDefault(ci => ci.Id == id);
         }
+
         public IEnumerable<CatalogType> GetCatalogTypes()
         {
             return db.CatalogTypes;
@@ -56,7 +57,7 @@ namespace eShopModernizedMVC.Services
 
         public void UpdateCatalogItem(CatalogItem catalogItem)
         {
-            db.Entry(catalogItem).State = EntityState.Modified;
+            db.Entry(catalogItem).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             db.SaveChanges();
         }
 

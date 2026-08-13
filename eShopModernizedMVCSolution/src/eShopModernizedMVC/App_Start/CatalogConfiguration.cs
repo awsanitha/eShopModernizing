@@ -1,93 +1,70 @@
-﻿using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedMVC
 {
     public class CatalogConfiguration
     {
+        private static IConfiguration _configuration;
+
+        public static void Initialize(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public static bool UseMockData
         {
-            get
-            {
-                return IsEnabled("UseMockData");
-            }
+            get => IsEnabled("UseMockData");
         }
 
         public static bool UseAzureStorage
         {
-            get
-            {
-                return IsEnabled("UseAzureStorage");
-            }
+            get => IsEnabled("UseAzureStorage");
         }
 
         public static bool UseManagedIdentity
         {
-            get
-            {
-                return IsEnabled("UseAzureManagedIdentity");
-            }
+            get => IsEnabled("UseAzureManagedIdentity");
         }
 
         public static bool UseCustomizationData
         {
-            get
-            {
-                return IsEnabled("UseCustomizationData");
-            }
+            get => IsEnabled("UseCustomizationData");
         }
 
         public static string StorageConnectionString
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["StorageConnectionString"];
-            }
+            get => _configuration?["StorageConnectionString"] ?? string.Empty;
         }
 
         public static string AppInsightsInstrumentationKey
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
-            }
+            get => _configuration?["AppInsightsInstrumentationKey"] ?? string.Empty;
         }
 
         public static bool UseAzureActiveDirectory
         {
-            get
-            {
-                return IsEnabled("UseAzureActiveDirectory");
-            }
+            get => IsEnabled("UseAzureActiveDirectory");
         }
 
         public static string AzureActiveDirectoryClientId
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryClientId"];
-            }
+            get => _configuration?["AzureActiveDirectoryClientId"] ?? string.Empty;
         }
 
         public static string AzureActiveDirectoryTenant
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryTenant"];
-            }
+            get => _configuration?["AzureActiveDirectoryTenant"] ?? string.Empty;
         }
 
         public static string PostLogoutRedirectUri
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["PostLogoutRedirectUri"];
-            }
+            get => _configuration?["PostLogoutRedirectUri"] ?? string.Empty;
         }
 
         private static bool IsEnabled(string configurationKey)
         {
-            return bool.Parse(ConfigurationManager.AppSettings[configurationKey]);
+            var value = _configuration?[configurationKey];
+            return bool.TryParse(value, out bool result) && result;
         }
     }
 }
