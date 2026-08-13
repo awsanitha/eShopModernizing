@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopWCFService.Models
 {
@@ -10,7 +9,7 @@ namespace eShopWCFService.Models
         private const int HiLoIncrement = 10;
         private int sequenceId = -1;
         private int remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private readonly object sequenceLock = new object();
 
         public int GetNextSequenceValue(EntityModel db)
         {
@@ -18,8 +17,14 @@ namespace eShopWCFService.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    var connection = db.Database.GetDbConnection();
+                    if (connection.State != ConnectionState.Open)
+                        connection.Open();
+
+                    using var cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT NEXT VALUE FOR catalog_hilo";
+                    var value = cmd.ExecuteScalar();
+                    sequenceId = (int)(long)value!;
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }
