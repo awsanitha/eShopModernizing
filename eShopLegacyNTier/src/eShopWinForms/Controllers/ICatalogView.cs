@@ -1,9 +1,6 @@
-﻿using eShopWinForms.eShopServiceReference;
+using eShopWinForms.eShopServiceReference;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWinForms.Controllers
 {
@@ -42,7 +39,6 @@ namespace eShopWinForms.Controllers
             itemId = id;
             itemStock = stock;
             shipDate = ship;
-
         }
     }
 
@@ -59,9 +55,9 @@ namespace eShopWinForms.Controllers
         {
             itemId = id;
             date = thisDate;
-
         }
     }
+
     public interface ICatalogView
     {
         event ViewHandler<ICatalogView> filterChanged;

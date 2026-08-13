@@ -1,4 +1,7 @@
-﻿namespace eShopWinForms
+﻿// Auto-generated designer code – suppress unused-field warnings for column objects
+// declared by the designer but unused in the current implementation.
+#pragma warning disable CS0169
+namespace eShopWinForms
 {
     partial class CatalogView
     {
@@ -645,3 +648,4 @@
     }
 }
 
+#pragma warning restore CS0169

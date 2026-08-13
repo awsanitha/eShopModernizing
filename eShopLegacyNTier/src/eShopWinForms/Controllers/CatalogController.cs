@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using eShopWinForms.eShopServiceReference;
 using System;
@@ -60,11 +60,11 @@ namespace eShopWinForms.Controllers
         private void CheckForDiscounts()
         {
             double discountPercentage = 0;
-            DiscountItem discount = _service.GetDiscount(DateTime.Now);
+            DiscountItem? discount = _service.GetDiscount(DateTime.Now);
             if (discount != null)
             {
                 discountPercentage = Math.Round(discount.Size * 100, 0);
-                String bannerText = String.Format("{0}% sale endson {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
+                String bannerText = String.Format("{0}% sale ends on {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
                 _view.SetDiscountBanner(bannerText);
             }
         }
@@ -77,7 +77,7 @@ namespace eShopWinForms.Controllers
             _view.ClearGrid();
             IEnumerable<CatalogItem> items = _service.GetCatalogItems(brandIdFilter, typeIdFilter);
             double discountVal = 0;
-            DiscountItem discount = _service.GetDiscount(DateTime.Now);
+            DiscountItem? discount = _service.GetDiscount(DateTime.Now);
             if (discount != null)
                 discountVal = discount.Size;
 
@@ -110,7 +110,7 @@ namespace eShopWinForms.Controllers
             foreach (var catalogBrand in brands)
             {
                 int idValue = catalogBrand.Id;
-                string typeValue = catalogBrand.Brand;
+                string typeValue = catalogBrand.Brand ?? string.Empty;
                 brandDictionary.Add(idValue, typeValue);
             }
 
@@ -136,7 +136,7 @@ namespace eShopWinForms.Controllers
             foreach (var catalogtype in types)
             {
                 int idValue = catalogtype.Id;
-                string typeValue = catalogtype.Type;
+                string typeValue = catalogtype.Type ?? string.Empty;
                 typeDictionary.Add(idValue, typeValue);
             }
 
