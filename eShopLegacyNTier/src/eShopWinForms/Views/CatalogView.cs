@@ -23,10 +23,10 @@ namespace eShopWinForms
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
-        private CatalogController _controller;
-        public event ViewHandler<ICatalogView> filterChanged;
-        public event SearchStockHandler<ICatalogView> searchStockButtonClicked;
-        public event AvailabilityHandler<ICatalogView> availabilityButtonClicked;
+        private CatalogController? _controller;
+        public event ViewHandler<ICatalogView>? filterChanged;
+        public event SearchStockHandler<ICatalogView>? searchStockButtonClicked;
+        public event AvailabilityHandler<ICatalogView>? availabilityButtonClicked;
 
         public void SetController(CatalogController controller)
         {
@@ -84,7 +84,7 @@ namespace eShopWinForms
          */
         public void SetTypeFilter(Dictionary<int, string> typeFilters)
         {
-            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, null);
+            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, dataMember: null!);
             catalogTypeComboBox.DisplayMember = "Value";
             catalogTypeComboBox.ValueMember = "Key";
         }
@@ -94,7 +94,7 @@ namespace eShopWinForms
          */
         public void SetBrandFilter(Dictionary<int, string> brandFilter)
         {
-            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, null);
+            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, dataMember: null!);
             catalogBrandComboBox.DisplayMember = "Value";
             catalogBrandComboBox.ValueMember = "Key";
         }
@@ -114,7 +114,7 @@ namespace eShopWinForms
             if (catalogTypeComboBox.SelectedItem != null)
                 typeId = ((KeyValuePair<int, string>)catalogTypeComboBox.SelectedItem).Key;
 
-            filterChanged.Invoke(this, new FilterEventArgs(typeId, brandId));
+            filterChanged?.Invoke(this, new FilterEventArgs(typeId, brandId));
         }
 
         /*
@@ -132,7 +132,7 @@ namespace eShopWinForms
             if (catalogTypeComboBox.SelectedItem != null)
                 typeId = ((KeyValuePair<int, string>)catalogTypeComboBox.SelectedItem).Key;
 
-            filterChanged.Invoke(this, new FilterEventArgs(typeId, brandId));
+            filterChanged?.Invoke(this, new FilterEventArgs(typeId, brandId));
         }
 
         /*
@@ -142,13 +142,14 @@ namespace eShopWinForms
         private void searchAvailabilityButton_Click(object sender, EventArgs e)
         {
             string[] separator = new string[] { " - " };
-            string[] results = listBox1.SelectedItem.ToString().Split(separator, StringSplitOptions.None);
+            string[] results = listBox1.SelectedItem?.ToString()?.Split(separator, StringSplitOptions.None) ?? Array.Empty<string>();
+            if (results.Length == 0) return;
 
             DateTime date = monthCalendar1.SelectionRange.Start.Date;
             int id = int.Parse(results[0]);
 
             SearchStockEventArgs ex = new SearchStockEventArgs(id, date);
-            searchStockButtonClicked.Invoke(this, ex);
+            searchStockButtonClicked?.Invoke(this, ex);
         }
 
         /*
@@ -164,7 +165,7 @@ namespace eShopWinForms
             DateTime shipDate = Convert.ToDateTime(arrivalDateInput.Text);
 
             AvailabilityEventArgs args = new AvailabilityEventArgs(id, quantity, shipDate);
-            availabilityButtonClicked.Invoke(this, args);
+            availabilityButtonClicked?.Invoke(this, args);
         }
 
         /*
