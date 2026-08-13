@@ -1,5 +1,6 @@
-﻿using System.Web;
 using eShopModernizedMVC.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 
 namespace eShopModernizedMVC.Services
@@ -19,30 +20,26 @@ namespace eShopModernizedMVC.Services
 
         public void Dispose()
         {
-
         }
 
         public void InitializeCatalogImages()
         {
-
         }
 
         public void UpdateImage(CatalogItem item)
         {
-
         }
 
-        public string UploadTempImage(HttpPostedFile file, int? catalogItemId)
+        public string UploadTempImage(IFormFile file, int? catalogItemId)
         {
             if (!catalogItemId.HasValue)
                 return UrlDefaultImage();
 
-            var pathPics = HttpContext.Current.Server.MapPath("~/Pics");
+            var pathPics = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Pics");
             var imageExists = File.Exists(Path.Combine(pathPics, catalogItemId.Value + ".png"));
 
             if (imageExists)
                 return BaseUrl() + catalogItemId.Value + ".png";
-
 
             return UrlDefaultImage();
         }

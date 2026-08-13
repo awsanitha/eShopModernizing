@@ -1,0 +1,37 @@
+@model CatalogItem
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>CatalogItem</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">@Model.Description</dd>
+        <dt class="col-sm-3">Brand</dt>
+        <dd class="col-sm-9">@Model.CatalogBrand?.Brand</dd>
+        <dt class="col-sm-3">Type</dt>
+        <dd class="col-sm-9">@Model.CatalogType?.Type</dd>
+        <dt class="col-sm-3">Price</dt>
+        <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+        <dt class="col-sm-3">Picture</dt>
+        <dd class="col-sm-9"><img src="@ViewBag.ImageUrl" alt="@Model.Name" width="200" /></dd>
+        <dt class="col-sm-3">Stock</dt>
+        <dd class="col-sm-9">@Model.AvailableStock</dd>
+        <dt class="col-sm-3">Restock Threshold</dt>
+        <dd class="col-sm-9">@Model.RestockThreshold</dd>
+        <dt class="col-sm-3">Max Stock</dt>
+        <dd class="col-sm-9">@Model.MaxStockThreshold</dd>
+        <dt class="col-sm-3">On Reorder</dt>
+        <dd class="col-sm-9">@Model.OnReorder</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

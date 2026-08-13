@@ -1,12 +1,12 @@
-﻿using eShopModernizedMVC.Models;
+using eShopModernizedMVC.Models;
+using Microsoft.AspNetCore.Http;
 using System;
-using System.Web;
 
 namespace eShopModernizedMVC.Services
 {
-    public interface IImageService: IDisposable
+    public interface IImageService : IDisposable
     {
-        string UploadTempImage(HttpPostedFile file, int? catalogItemId);
+        string UploadTempImage(IFormFile file, int? catalogItemId);
         string BaseUrl();
         void UpdateImage(CatalogItem item);
         string UrlDefaultImage();

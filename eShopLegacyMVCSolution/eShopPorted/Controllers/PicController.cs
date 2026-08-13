@@ -1,8 +1,7 @@
-﻿using eShopPorted.Services;
+using eShopPorted.Services;
 using log4net;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using System.Net;
-using System.Web.Mvc;
 
 namespace eShopPorted.Controllers
 {
@@ -22,13 +21,13 @@ namespace eShopPorted.Controllers
         // GET: Pic/5.png
         [HttpGet]
         [Route("items/{catalogItemId:int}/pic", Name = GetPicRouteName)]
-        public ActionResult Index(int catalogItemId)
+        public IActionResult Index(int catalogItemId)
         {
             _log.Info($"Now loading... /items/Index?{catalogItemId}/pic");
 
             if (catalogItemId <= 0)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             var item = service.FindCatalogItem(catalogItemId);
@@ -36,7 +35,6 @@ namespace eShopPorted.Controllers
             if (item != null)
             {
                 var webRoot = "";
-                //var webRoot = Server.MapPath("~/Pics");
                 var path = Path.Combine(webRoot, item.PictureFileName);
 
                 string imageFileExtension = Path.GetExtension(item.PictureFileName);
@@ -47,46 +45,23 @@ namespace eShopPorted.Controllers
                 return File(buffer, mimetype);
             }
 
-            return HttpNotFound();
+            return NotFound();
         }
 
         private string GetImageMimeTypeFromImageFileExtension(string extension)
         {
-            string mimetype;
-
-            switch (extension)
+            return extension switch
             {
-                case ".png":
-                    mimetype = "image/png";
-                    break;
-                case ".gif":
-                    mimetype = "image/gif";
-                    break;
-                case ".jpg":
-                case ".jpeg":
-                    mimetype = "image/jpeg";
-                    break;
-                case ".bmp":
-                    mimetype = "image/bmp";
-                    break;
-                case ".tiff":
-                    mimetype = "image/tiff";
-                    break;
-                case ".wmf":
-                    mimetype = "image/wmf";
-                    break;
-                case ".jp2":
-                    mimetype = "image/jp2";
-                    break;
-                case ".svg":
-                    mimetype = "image/svg+xml";
-                    break;
-                default:
-                    mimetype = "application/octet-stream";
-                    break;
-            }
-
-            return mimetype;
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".bmp" => "image/bmp",
+                ".tiff" => "image/tiff",
+                ".wmf" => "image/wmf",
+                ".jp2" => "image/jp2",
+                ".svg" => "image/svg+xml",
+                _ => "application/octet-stream"
+            };
         }
     }
 }

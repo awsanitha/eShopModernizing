@@ -1,0 +1,67 @@
+@model PaginatedItemsViewModel<CatalogItem>
+@{
+    ViewData["Title"] = "Catalog";
+}
+
+<h2>Catalog</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Picture</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Brand</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Data)
+        {
+            <tr>
+                <td><img src="~/Pics/@item.PictureFileName" alt="@item.Name" width="50" /></td>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.CatalogBrand?.Brand</td>
+                <td>@item.CatalogType?.Type</td>
+                <td>@item.Price.ToString("C")</td>
+                <td>@item.AvailableStock</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        @if (Model.ActualPage > 0)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-pageIndex="@(Model.ActualPage - 1)" asp-route-pageSize="@Model.ItemsPerPage">Previous</a>
+            </li>
+        }
+        @for (int i = 0; i < Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.ActualPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageIndex="@i" asp-route-pageSize="@Model.ItemsPerPage">@(i + 1)</a>
+            </li>
+        }
+        @if (Model.ActualPage < Model.TotalPages - 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-pageIndex="@(Model.ActualPage + 1)" asp-route-pageSize="@Model.ItemsPerPage">Next</a>
+            </li>
+        }
+    </ul>
+</nav>

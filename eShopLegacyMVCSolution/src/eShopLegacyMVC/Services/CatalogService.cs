@@ -1,12 +1,11 @@
-﻿using eShopLegacyMVC.Models;
+using eShopLegacyMVC.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using eShopLegacyMVC.ViewModel;
 
 namespace eShopLegacyMVC.Services
 {
-
     public class CatalogService : ICatalogService
     {
         private CatalogDBContext db;
@@ -36,16 +35,17 @@ namespace eShopLegacyMVC.Services
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id);
+            return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id)!;
         }
+
         public IEnumerable<CatalogType> GetCatalogTypes()
         {
-            return db.CatalogTypes;
+            return db.CatalogTypes.ToList();
         }
 
         public IEnumerable<CatalogBrand> GetCatalogBrands()
         {
-            return db.CatalogBrands;
+            return db.CatalogBrands.ToList();
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)

@@ -1,4 +1,4 @@
-﻿namespace eShopModernizedWebForms.Models
+namespace eShopModernizedWebForms.Models
 {
     public class CatalogType
     {

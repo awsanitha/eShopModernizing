@@ -1,22 +1,13 @@
-﻿
-@if (Request.IsAuthenticated)
+@if (User.Identity?.IsAuthenticated ?? false)
 {
-    <text>
-        <ul class="nav navbar-nav navbar-right">
-            <li class="navbar-text">
-                Hello, @User.Identity.Name!
-            </li>
-            <li>
-                @Html.ActionLink("Sign out", "SignOut", "Account", routeValues: null, htmlAttributes: new { @class = "esh-login-link" })
-            </li>
-        </ul>
-    </text>
+    <div class="esh-identity">
+        <span class="esh-identity-name">@User.Identity.Name</span>
+        <a href="@Url.Action("SignOut", "Account")" class="esh-identity-item">Sign out</a>
+    </div>
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-        @Html.ActionLink("Sign in", "SignIn", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "esh-login-link" })
-        </li>
-    </ul>
+    <div class="esh-identity">
+        <a href="@Url.Action("SignIn", "Account")" class="esh-identity-item">Sign in</a>
+    </div>
 }
