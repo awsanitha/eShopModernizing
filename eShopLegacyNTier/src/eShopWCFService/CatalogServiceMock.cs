@@ -1,10 +1,8 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWCFService
 {
@@ -25,26 +23,26 @@ namespace eShopWCFService
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
+            return catalogItems.FirstOrDefault(x => x.Id == id)!;
         }
 
         public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
         {
             bool brandFilterIsNull = brandIdFilter == 0;
             bool typeFilterIsNull = typeIdFilter == 0;
-            return catalogItems.ToList().Where(x =>
-                (brandFilterIsNull ? true : x.CatalogBrandId == brandIdFilter) &&
-                (typeFilterIsNull ? true : x.CatalogTypeId == typeIdFilter)).ToList();
+            return catalogItems.Where(x =>
+                (brandFilterIsNull || x.CatalogBrandId == brandIdFilter) &&
+                (typeFilterIsNull || x.CatalogTypeId == typeIdFilter)).ToList();
         }
 
-        public IEnumerable<CatalogType> GetCatalogTypes()
+        public List<CatalogType> GetCatalogTypes()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+            return catalogTypes;
         }
 
-        public IEnumerable<CatalogBrand> GetCatalogBrands()
+        public List<CatalogBrand> GetCatalogBrands()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogBrands();
+            return catalogBrands;
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)
@@ -58,9 +56,7 @@ namespace eShopWCFService
         {
             var originalItem = FindCatalogItem(modifiedItem.Id);
             if (originalItem != null)
-            {
                 catalogItems[catalogItems.IndexOf(originalItem)] = modifiedItem;
-            }
         }
 
         public void RemoveCatalogItem(CatalogItem catalogItem)
@@ -72,41 +68,21 @@ namespace eShopWCFService
         {
         }
 
-        private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
-        {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-            items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
-            items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
-
-            return items;
-        }
-
-        List<CatalogBrand> ICatalogService.GetCatalogBrands()
-        {
-            return catalogBrands;
-        }
-
-        List<CatalogType> ICatalogService.GetCatalogTypes()
-        {
-            return catalogTypes;
-        }
-
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date)).AvailableStock;
+            var s = catalogItemsStock.FirstOrDefault(
+                x => x.CatalogItemId == catalogItemId && x.Date.Date == date.Date);
+            return s?.AvailableStock ?? 0;
         }
 
         public void CreateAvailableStock(CatalogItemsStock cat)
         {
-            CatalogItemsStock s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
-                    .Where(y => y.Date.Date == cat.Date.Date).FirstOrDefault();
+            CatalogItemsStock? s = catalogItemsStock
+                .Where(x => x.CatalogItemId == cat.CatalogItemId)
+                .FirstOrDefault(y => y.Date.Date == cat.Date.Date);
 
-            /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
             if (s != null)
-            {
                 s.AvailableStock = cat.AvailableStock;
-            }
             else
             {
                 var maxId = catalogItemsStock.Max(i => i.StockId);

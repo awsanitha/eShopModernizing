@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
 
 namespace eShopWCFService.Models.Infrastructure
 {
     public class CatalogConfiguration
     {
-        private static readonly string configConnectionName = "EntityModel";
+        private const string DefaultConnectionStringName = "EntityModel";
 
-        public static string ConnectionString
-        {
-            get
-            {
-                var envConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
-                return envConnectionString ?? $"name={configConnectionName}";
-            }
-        }
+        /// <summary>
+        /// Returns the connection string for the catalog database.
+        /// Checks the "ConnectionString" environment variable first; falls back to the
+        /// named connection string from appsettings.json.
+        /// </summary>
+        public static string ConnectionStringName => DefaultConnectionStringName;
+
+        public static string? EnvironmentOverride =>
+            Environment.GetEnvironmentVariable("ConnectionString");
     }
 }

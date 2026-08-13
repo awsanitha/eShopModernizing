@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net;
+using System.Collections.Generic;
 using eShopWinForms.eShopServiceReference;
 using System;
 
@@ -44,13 +43,12 @@ namespace eShopWinForms.Controllers
         }
 
         /*
-         * Gets the number of stock available for a given item and date, then updates the 
+         * Gets the number of stock available for a given item and date, then updates the
          * view to reflect the result.
          */
         private void searchStockAvailable(ICatalogView view, SearchStockEventArgs e)
         {
             int res = _service.GetAvailableStock(e.date, e.itemId);
-
             _view.ShowStockAvailability(e, res);
         }
 
@@ -64,7 +62,7 @@ namespace eShopWinForms.Controllers
             if (discount != null)
             {
                 discountPercentage = Math.Round(discount.Size * 100, 0);
-                String bannerText = String.Format("{0}% sale endson {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
+                String bannerText = String.Format("{0}% sale ends on {1}!", discountPercentage.ToString(), discount.End.ToShortDateString());
                 _view.SetDiscountBanner(bannerText);
             }
         }
@@ -84,7 +82,6 @@ namespace eShopWinForms.Controllers
             _view.SetCatalogItems(items, discountVal);
         }
 
-
         private void SetShipmentView()
         {
             IEnumerable<CatalogItem> items = _service.GetCatalogItems(0, 0);
@@ -97,22 +94,13 @@ namespace eShopWinForms.Controllers
          */
         private void LoadBrandFilters()
         {
-            //Fetch the list of catalog item brands
             IEnumerable<CatalogBrand> brands = _service.GetCatalogBrands();
 
-            // Bind combobox to dictionary
             Dictionary<int, string> brandDictionary = new Dictionary<int, string>();
-
-            //The service does not return an 'all' item by default, so we must add it.
             brandDictionary.Add(0, "All");
 
-            // Add rest of type filters
             foreach (var catalogBrand in brands)
-            {
-                int idValue = catalogBrand.Id;
-                string typeValue = catalogBrand.Brand;
-                brandDictionary.Add(idValue, typeValue);
-            }
+                brandDictionary.Add(catalogBrand.Id, catalogBrand.Brand);
 
             _view.SetBrandFilter(brandDictionary);
         }
@@ -123,29 +111,20 @@ namespace eShopWinForms.Controllers
          */
         private void LoadTypeFilters()
         {
-            //Fetch the list of catalog item types
             IEnumerable<CatalogType> types = _service.GetCatalogTypes();
 
-            // Bind combobox to dictionary
             Dictionary<int, string> typeDictionary = new Dictionary<int, string>();
-
-            //The service does not return an 'all' item by default, so we must add it.
             typeDictionary.Add(0, "All");
 
-            // Add rest of type filters
             foreach (var catalogtype in types)
-            {
-                int idValue = catalogtype.Id;
-                string typeValue = catalogtype.Type;
-                typeDictionary.Add(idValue, typeValue);
-            }
+                typeDictionary.Add(catalogtype.Id, catalogtype.Type);
 
             _view.SetTypeFilter(typeDictionary);
         }
 
         /*
          * Called at the beginning of the lifecycle of the controller
-         * to set up our view and get all inital data
+         * to set up our view and get all initial data
          */
         public void LoadView()
         {
