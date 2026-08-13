@@ -1,4 +1,5 @@
-﻿namespace eShopWinForms
+﻿#pragma warning disable CS0169 // Field is never used (auto-generated designer fields)
+namespace eShopWinForms
 {
     partial class CatalogView
     {
