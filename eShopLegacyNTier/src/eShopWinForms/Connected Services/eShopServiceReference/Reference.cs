@@ -569,19 +569,28 @@ namespace eShopWinForms.eShopServiceReference {
         
         public CatalogServiceClient() {
         }
-        
-        public CatalogServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
+
+        // Config-name constructors are not supported on .NET 10 (System.ServiceModel NuGet
+        // packages do not read from app.config <system.serviceModel>). Kept for API
+        // compatibility only — calling them throws NotSupportedException.
+        public CatalogServiceClient(string endpointConfigurationName) {
+            throw new System.NotSupportedException(
+                "Config-name WCF constructors are not supported on .NET 10. " +
+                "Use CatalogServiceClient(Binding, EndpointAddress) instead.");
         }
-        
-        public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+
+        public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) {
+            throw new System.NotSupportedException(
+                "Config-name WCF constructors are not supported on .NET 10. " +
+                "Use CatalogServiceClient(Binding, EndpointAddress) instead.");
         }
-        
-        public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+
+        public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) {
+            throw new System.NotSupportedException(
+                "Config-name WCF constructors are not supported on .NET 10. " +
+                "Use CatalogServiceClient(Binding, EndpointAddress) instead.");
         }
-        
+
         public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
         }

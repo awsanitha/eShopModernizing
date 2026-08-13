@@ -1,16 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Reflection;
-using System.Linq.Expressions;
 using eShopWinForms.eShopServiceReference;
-using System.Net.Http;
 using eShopWinForms.Controllers;
 
 namespace eShopWinForms
@@ -23,10 +15,10 @@ namespace eShopWinForms
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
-        private CatalogController _controller;
-        public event ViewHandler<ICatalogView> filterChanged;
-        public event SearchStockHandler<ICatalogView> searchStockButtonClicked;
-        public event AvailabilityHandler<ICatalogView> availabilityButtonClicked;
+        private CatalogController? _controller;
+        public event ViewHandler<ICatalogView>? filterChanged;
+        public event SearchStockHandler<ICatalogView>? searchStockButtonClicked;
+        public event AvailabilityHandler<ICatalogView>? availabilityButtonClicked;
 
         public void SetController(CatalogController controller)
         {
@@ -43,7 +35,8 @@ namespace eShopWinForms
         }
 
         /*
-         * Populates the gridview with catalog items and applies an appropriate discount to their price if there is one.
+         * Populates the gridview with catalog items and applies an appropriate discount
+         * to their price if there is one.
          */
         public void SetCatalogItems(IEnumerable<CatalogItem> items, double discountVal)
         {
@@ -52,8 +45,9 @@ namespace eShopWinForms
                 double price = double.Parse(catalogItem.Price.ToString());
                 double discountPrice = price * (1 - discountVal);
 
-                /* Item assets are stored relative to the program executable's directory. In the database, they have a filename.
-                   We depend on the fact that this filename refences an image already in the "assets" directory */
+                /* Item assets are stored relative to the program executable's directory. In the database,
+                   they have a filename. We depend on the fact that this filename references an image already
+                   in the "assets" directory */
                 string imagename = Environment.CurrentDirectory + "\\..\\..\\Assets\\Images\\Catalog\\" + catalogItem.Picturefilename;
                 Image img = Image.FromFile(imagename);
                 Image thumb = img.GetThumbnailImage(384, 216, null, IntPtr.Zero);
@@ -72,7 +66,7 @@ namespace eShopWinForms
         }
 
         /*
-         * Should there be a discount for the current day, we populate a banner reflecting the value of the discount
+         * Should there be a discount for the current day, we populate a banner reflecting the value
          */
         public void SetDiscountBanner(String text)
         {
@@ -84,7 +78,7 @@ namespace eShopWinForms
          */
         public void SetTypeFilter(Dictionary<int, string> typeFilters)
         {
-            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, null);
+            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, null!);
             catalogTypeComboBox.DisplayMember = "Value";
             catalogTypeComboBox.ValueMember = "Key";
         }
@@ -94,14 +88,13 @@ namespace eShopWinForms
          */
         public void SetBrandFilter(Dictionary<int, string> brandFilter)
         {
-            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, null);
+            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, null!);
             catalogBrandComboBox.DisplayMember = "Value";
             catalogBrandComboBox.ValueMember = "Key";
         }
 
         /*
-         * Called in response to the catalog brand dropdown being changed. Fire an event
-         * to notify the controller that we've changed a filter.
+         * Called in response to the catalog brand dropdown being changed.
          */
         private void catalogBrandComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -114,12 +107,11 @@ namespace eShopWinForms
             if (catalogTypeComboBox.SelectedItem != null)
                 typeId = ((KeyValuePair<int, string>)catalogTypeComboBox.SelectedItem).Key;
 
-            filterChanged.Invoke(this, new FilterEventArgs(typeId, brandId));
+            filterChanged?.Invoke(this, new FilterEventArgs(typeId, brandId));
         }
 
         /*
-         * Called in response to the catalog type dropdown being changed. Fire an event
-         * to notify the controller that we've changed a brand filter
+         * Called in response to the catalog type dropdown being changed.
          */
         private void catalogTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -132,23 +124,24 @@ namespace eShopWinForms
             if (catalogTypeComboBox.SelectedItem != null)
                 typeId = ((KeyValuePair<int, string>)catalogTypeComboBox.SelectedItem).Key;
 
-            filterChanged.Invoke(this, new FilterEventArgs(typeId, brandId));
+            filterChanged?.Invoke(this, new FilterEventArgs(typeId, brandId));
         }
 
         /*
          * Fire an event to notify the controller that the user wants to check for stock availability
-         * of the selected item.
          */
         private void searchAvailabilityButton_Click(object sender, EventArgs e)
         {
+            if (listBox1.SelectedItem == null) return;
+
             string[] separator = new string[] { " - " };
-            string[] results = listBox1.SelectedItem.ToString().Split(separator, StringSplitOptions.None);
+            string[] results = listBox1.SelectedItem.ToString()!.Split(separator, StringSplitOptions.None);
 
             DateTime date = monthCalendar1.SelectionRange.Start.Date;
             int id = int.Parse(results[0]);
 
             SearchStockEventArgs ex = new SearchStockEventArgs(id, date);
-            searchStockButtonClicked.Invoke(this, ex);
+            searchStockButtonClicked?.Invoke(this, ex);
         }
 
         /*
@@ -164,7 +157,7 @@ namespace eShopWinForms
             DateTime shipDate = Convert.ToDateTime(arrivalDateInput.Text);
 
             AvailabilityEventArgs args = new AvailabilityEventArgs(id, quantity, shipDate);
-            availabilityButtonClicked.Invoke(this, args);
+            availabilityButtonClicked?.Invoke(this, args);
         }
 
         /*

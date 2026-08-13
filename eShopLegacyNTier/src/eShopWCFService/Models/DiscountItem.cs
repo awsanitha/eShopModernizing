@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
 
 namespace eShopWCFService.Models
 {
     [DataContract]
     public class DiscountItem
     {
-        public DiscountItem()
-        {
-        }
+        public DiscountItem() { }
 
         [DataMember]
         public double Size { get; set; }
