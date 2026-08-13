@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopModernizedMVC.Models
 {
@@ -7,23 +6,23 @@ namespace eShopModernizedMVC.Models
     {
         private const int HiLoIncrement = 10;
         private int _sequenceId = -1;
-        private int _remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private int _remainingLoIds = 0;
+        private readonly object _sequenceLock = new object();
 
         public int GetNextSequenceValue(CatalogDBContext db)
         {
-            lock (sequenceLock)
+            lock (_sequenceLock)
             {
-                if (_remainningLoIds == 0)
+                if (_remainingLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    _sequenceId = (int)rawQuery.Single();
-                    _remainningLoIds = HiLoIncrement - 1;
+                    var result = db.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR catalog_hilo;").ToList();
+                    _sequenceId = (int)result[0];
+                    _remainingLoIds = HiLoIncrement - 1;
                     return _sequenceId;
                 }
                 else
                 {
-                    _remainningLoIds--;
+                    _remainingLoIds--;
                     return ++_sequenceId;
                 }
             }

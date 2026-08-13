@@ -1,23 +1,19 @@
-﻿using Microsoft.Owin;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace eShopModernizedWebForms.Middleware
 {
-    public class AuthenticationMiddleware : OwinMiddleware
+    /// <summary>
+    /// A simple fallback authentication middleware that adds a basic identity
+    /// when Azure Active Directory auth is not configured.
+    /// </summary>
+    public class AuthenticationMiddleware : IMiddleware
     {
-        public AuthenticationMiddleware(OwinMiddleware next)
-        : base(next)
-        {
-        }
-
-        public async override Task Invoke(IOwinContext context)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var identity = new ClaimsIdentity("cookies");
             identity.AddClaim(new Claim("iat", "1234"));
-            context.Authentication.User = new ClaimsPrincipal();
-            context.Authentication.User.AddIdentity(identity);
-            await Next.Invoke(context);
+            context.User = new ClaimsPrincipal(identity);
+            await next(context);
         }
     }
 }

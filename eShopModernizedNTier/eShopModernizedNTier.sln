@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
@@ -7,7 +7,7 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopWCFService", "src\eShopWCFService\eShopWCFService.csproj", "{52E28A9A-68ED-4F7C-BC67-E2AB4396CB53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopWinForms", "src\eShopWinForms\eShopWinForms.csproj", "{AE32909C-9EE6-4ECE-B407-D23A15A1FEED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopWinForms", "src\eShopWinForms\eShopWinForms.csproj", "{AE32909C-9EE6-4ECE-B407-D23A15A1FEED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

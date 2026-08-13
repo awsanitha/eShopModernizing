@@ -1,93 +1,42 @@
-﻿using System.Configuration;
-
 namespace eShopModernizedMVC
 {
-    public class CatalogConfiguration
+    /// <summary>
+    /// Provides catalog configuration values from the DI-injected IConfiguration.
+    /// For use in code that cannot easily use constructor injection.
+    /// </summary>
+    public static class CatalogConfiguration
     {
+        private static IConfiguration? _configuration;
 
-        public static bool UseMockData
+        public static void Initialize(IConfiguration configuration)
         {
-            get
-            {
-                return IsEnabled("UseMockData");
-            }
+            _configuration = configuration;
         }
 
-        public static bool UseAzureStorage
-        {
-            get
-            {
-                return IsEnabled("UseAzureStorage");
-            }
-        }
+        public static bool UseMockData => IsEnabled("UseMockData");
+        public static bool UseAzureStorage => IsEnabled("UseAzureStorage");
+        public static bool UseManagedIdentity => IsEnabled("UseAzureManagedIdentity");
+        public static bool UseCustomizationData => IsEnabled("UseCustomizationData");
+        public static bool UseAzureActiveDirectory => IsEnabled("UseAzureActiveDirectory");
 
-        public static bool UseManagedIdentity
-        {
-            get
-            {
-                return IsEnabled("UseAzureManagedIdentity");
-            }
-        }
+        public static string StorageConnectionString =>
+            _configuration?["StorageConnectionString"] ?? string.Empty;
 
-        public static bool UseCustomizationData
-        {
-            get
-            {
-                return IsEnabled("UseCustomizationData");
-            }
-        }
+        public static string AppInsightsInstrumentationKey =>
+            _configuration?["AppInsightsInstrumentationKey"] ?? string.Empty;
 
-        public static string StorageConnectionString
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["StorageConnectionString"];
-            }
-        }
+        public static string AzureActiveDirectoryClientId =>
+            _configuration?["AzureActiveDirectoryClientId"] ?? string.Empty;
 
-        public static string AppInsightsInstrumentationKey
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
-            }
-        }
+        public static string AzureActiveDirectoryTenant =>
+            _configuration?["AzureActiveDirectoryTenant"] ?? string.Empty;
 
-        public static bool UseAzureActiveDirectory
-        {
-            get
-            {
-                return IsEnabled("UseAzureActiveDirectory");
-            }
-        }
-
-        public static string AzureActiveDirectoryClientId
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryClientId"];
-            }
-        }
-
-        public static string AzureActiveDirectoryTenant
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryTenant"];
-            }
-        }
-
-        public static string PostLogoutRedirectUri
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["PostLogoutRedirectUri"];
-            }
-        }
+        public static string PostLogoutRedirectUri =>
+            _configuration?["PostLogoutRedirectUri"] ?? string.Empty;
 
         private static bool IsEnabled(string configurationKey)
         {
-            return bool.Parse(ConfigurationManager.AppSettings[configurationKey]);
+            return _configuration?.GetValue<bool>(configurationKey) ?? false;
         }
     }
 }
