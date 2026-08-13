@@ -1,93 +1,31 @@
-﻿using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedWebForms
 {
     public class CatalogConfiguration
     {
+        private static IConfiguration _configuration;
 
-        public static bool UseMockData
+        public static void Initialize(IConfiguration configuration)
         {
-            get
-            {
-                return IsEnabled("UseMockData");
-            }
+            _configuration = configuration;
         }
 
-        public static bool UseManagedIdentity
-        {
-            get
-            {
-                return IsEnabled("UseAzureManagedIdentity");
-            }
-        }
-
-        public static bool UseAzureStorage
-        {
-            get
-            {
-                return IsEnabled("UseAzureStorage");
-            }
-        }
-
-        public static bool UseCustomizationData
-        {
-            get
-            {
-                return IsEnabled("UseCustomizationData");
-            }
-        }
-
-        public static string StorageConnectionString
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["StorageConnectionString"];
-            }
-        }
-
-        public static string AppInsightsInstrumentationKey
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
-            }
-        }
-
-        public static bool UseAzureActiveDirectory
-        {
-            get
-            {
-                return IsEnabled("UseAzureActiveDirectory");
-            }
-        }
-
-        public static string AzureActiveDirectoryClientId
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryClientId"];
-            }
-        }
-
-        public static string AzureActiveDirectoryTenant
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryTenant"];
-            }
-        }
-
-        public static string PostLogoutRedirectUri
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["PostLogoutRedirectUri"];
-            }
-        }
+        public static bool UseMockData => IsEnabled("UseMockData");
+        public static bool UseAzureStorage => IsEnabled("UseAzureStorage");
+        public static bool UseManagedIdentity => IsEnabled("UseAzureManagedIdentity");
+        public static bool UseCustomizationData => IsEnabled("UseCustomizationData");
+        public static bool UseAzureActiveDirectory => IsEnabled("UseAzureActiveDirectory");
+        public static string StorageConnectionString => _configuration?["StorageConnectionString"] ?? string.Empty;
+        public static string AppInsightsInstrumentationKey => _configuration?["AppInsightsInstrumentationKey"] ?? string.Empty;
+        public static string AzureActiveDirectoryClientId => _configuration?["AzureActiveDirectoryClientId"] ?? string.Empty;
+        public static string AzureActiveDirectoryTenant => _configuration?["AzureActiveDirectoryTenant"] ?? string.Empty;
+        public static string PostLogoutRedirectUri => _configuration?["PostLogoutRedirectUri"] ?? string.Empty;
 
         private static bool IsEnabled(string configurationKey)
         {
-            return bool.Parse(ConfigurationManager.AppSettings[configurationKey]);
+            var value = _configuration?[configurationKey];
+            return bool.TryParse(value, out bool result) && result;
         }
     }
 }

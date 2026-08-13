@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace eShopModernizedWebForms.Models
@@ -8,7 +9,7 @@ namespace eShopModernizedWebForms.Models
         private const int HiLoIncrement = 10;
         private int sequenceId = -1;
         private int remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private readonly object sequenceLock = new object();
 
         public int GetNextSequenceValue(CatalogDBContext db)
         {
@@ -16,8 +17,8 @@ namespace eShopModernizedWebForms.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    var result = db.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR catalog_hilo;").ToList();
+                    sequenceId = (int)result.Single();
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }

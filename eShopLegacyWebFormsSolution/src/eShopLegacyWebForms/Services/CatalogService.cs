@@ -1,8 +1,6 @@
-﻿using System;
 using eShopLegacyWebForms.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using eShopLegacyWebForms.ViewModel;
 
@@ -10,8 +8,8 @@ namespace eShopLegacyWebForms.Services
 {
     public class CatalogService : ICatalogService
     {
-        private CatalogDBContext db;
-        private CatalogItemHiLoGenerator indexGenerator;
+        private readonly CatalogDBContext db;
+        private readonly CatalogItemHiLoGenerator indexGenerator;
 
         public CatalogService(CatalogDBContext db, CatalogItemHiLoGenerator indexGenerator)
         {
@@ -22,7 +20,6 @@ namespace eShopLegacyWebForms.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize, int pageIndex)
         {
             var totalItems = db.CatalogItems.LongCount();
-
             var itemsOnPage = db.CatalogItems
                 .Include(c => c.CatalogBrand)
                 .Include(c => c.CatalogType)
@@ -30,24 +27,19 @@ namespace eShopLegacyWebForms.Services
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToList();
-
-            return new PaginatedItemsViewModel<CatalogItem>(
-                pageIndex, pageSize, totalItems, itemsOnPage);
+            return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
         }
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id);
-        }
-        public IEnumerable<CatalogType> GetCatalogTypes()
-        {
-            return db.CatalogTypes.ToList();
+            return db.CatalogItems
+                .Include(c => c.CatalogBrand)
+                .Include(c => c.CatalogType)
+                .FirstOrDefault(ci => ci.Id == id);
         }
 
-        public IEnumerable<CatalogBrand> GetCatalogBrands()
-        {
-            return db.CatalogBrands.ToList();
-        }
+        public IEnumerable<CatalogType> GetCatalogTypes() => db.CatalogTypes.ToList();
+        public IEnumerable<CatalogBrand> GetCatalogBrands() => db.CatalogBrands.ToList();
 
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
@@ -58,7 +50,7 @@ namespace eShopLegacyWebForms.Services
 
         public void UpdateCatalogItem(CatalogItem catalogItem)
         {
-            db.Entry(catalogItem).State = EntityState.Modified;
+            db.Entry(catalogItem).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             db.SaveChanges();
         }
 
@@ -68,9 +60,6 @@ namespace eShopLegacyWebForms.Services
             db.SaveChanges();
         }
 
-        public void Dispose()
-        {
-            db.Dispose();
-        }
+        public void Dispose() => db.Dispose();
     }
 }

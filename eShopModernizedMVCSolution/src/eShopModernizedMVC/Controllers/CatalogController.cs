@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Web.Mvc;
 using eShopModernizedMVC.Models;
 using eShopModernizedMVC.Services;
-using System.IO;
 using log4net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
 
 namespace eShopModernizedMVC.Controllers
 {
@@ -22,7 +24,7 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // GET /[?pageSize=3&pageIndex=10]
-        public ActionResult Index(int pageSize = 10, int pageIndex = 0)
+        public IActionResult Index(int pageSize = 10, int pageIndex = 0)
         {
             _log.Info($"Now loading... /Catalog/Index?pageSize={pageSize}&pageIndex={pageIndex}");
             var paginatedItems = _service.GetCatalogItemsPaginated(pageSize, pageIndex);
@@ -31,54 +33,39 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // GET: Catalog/Details/5
-        public ActionResult Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return BadRequest();
             _log.Info($"Now loading... /Catalog/Details?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
-            if (catalogItem == null)
-            {
-                return HttpNotFound();
-            }
+            if (catalogItem == null) return NotFound();
             AddUriPlaceHolder(catalogItem);
-
             return View(catalogItem);
         }
 
         // GET: Catalog/Create
         [Authorize]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             _log.Info($"Now loading... /Catalog/Create");
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand");
             ViewBag.CatalogTypeId = new SelectList(_service.GetCatalogTypes(), "Id", "Type");
             ViewBag.UseAzureStorage = CatalogConfiguration.UseAzureStorage;
-
-            return View(new CatalogItem()
-            {
-                PictureUri = _imageService.UrlDefaultImage()
-            });
+            return View(new CatalogItem { PictureUri = _imageService.UrlDefaultImage() });
         }
 
         // POST: Catalog/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Create([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public IActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Create?catalogItemName={catalogItem.Name}");
             if (ModelState.IsValid)
             {
                 if (!string.IsNullOrEmpty(catalogItem.TempImageName))
                 {
-                    var fileName = Path.GetFileName(catalogItem.TempImageName);
-                    catalogItem.PictureFileName = fileName;
+                    catalogItem.PictureFileName = Path.GetFileName(catalogItem.TempImageName);
                 }
-
                 _service.CreateCatalogItem(catalogItem);
                 if (!string.IsNullOrEmpty(catalogItem.TempImageName))
                 {
@@ -86,7 +73,6 @@ namespace eShopModernizedMVC.Controllers
                 }
                 return RedirectToAction("Index");
             }
-
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
             ViewBag.CatalogTypeId = new SelectList(_service.GetCatalogTypes(), "Id", "Type", catalogItem.CatalogTypeId);
             ViewBag.UseAzureStorage = CatalogConfiguration.UseAzureStorage;
@@ -95,20 +81,12 @@ namespace eShopModernizedMVC.Controllers
 
         // GET: Catalog/Edit/5
         [Authorize]
-        public ActionResult Edit(int? id)
+        public IActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
+            if (id == null) return BadRequest();
             _log.Info($"Now loading... /Catalog/Edit?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
-
-            if (catalogItem == null)
-            {
-                return HttpNotFound();
-            }
+            if (catalogItem == null) return NotFound();
             AddUriPlaceHolder(catalogItem);
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
             ViewBag.CatalogTypeId = new SelectList(_service.GetCatalogTypes(), "Id", "Type", catalogItem.CatalogTypeId);
@@ -117,11 +95,9 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // POST: Catalog/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public IActionResult Edit([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Edit?id={catalogItem.Id}");
             if (ModelState.IsValid)
@@ -129,10 +105,8 @@ namespace eShopModernizedMVC.Controllers
                 if (!string.IsNullOrEmpty(catalogItem.TempImageName))
                 {
                     _imageService.UpdateImage(catalogItem);
-                    var fileName = Path.GetFileName(catalogItem.TempImageName);
-                    catalogItem.PictureFileName = fileName;
+                    catalogItem.PictureFileName = Path.GetFileName(catalogItem.TempImageName);
                 }
-
                 _service.UpdateCatalogItem(catalogItem);
                 return RedirectToAction("Index");
             }
@@ -144,27 +118,20 @@ namespace eShopModernizedMVC.Controllers
 
         // GET: Catalog/Delete/5
         [Authorize]
-        public ActionResult Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             _log.Info($"Now loading... /Catalog/Delete?id={id}");
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return BadRequest();
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
-            if (catalogItem == null)
-            {
-                return HttpNotFound();
-            }
+            if (catalogItem == null) return NotFound();
             AddUriPlaceHolder(catalogItem);
-
             return View(catalogItem);
         }
 
         // POST: Catalog/Delete/5
         [HttpPost, ActionName("Delete")]
         [Authorize]
-        public ActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
             _log.Info($"Now processing... /Catalog/DeleteConfirmed?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id);
@@ -195,4 +162,3 @@ namespace eShopModernizedMVC.Controllers
         }
     }
 }
-

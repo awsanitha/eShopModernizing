@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using eShopModernizedWebForms.Models;
 using eShopModernizedWebForms.Models.Infrastructure;
 using eShopModernizedWebForms.Services;
@@ -7,20 +7,18 @@ namespace eShopModernizedWebForms.Modules
 {
     public class ApplicationModule : Module
     {
-        private bool useMockData;
-        private bool useAzureStorage;
-        private bool useManagedIdentity;
+        private readonly bool useMockData;
+        private readonly bool useAzureStorage;
 
-        public ApplicationModule(bool useMockData, bool useAzureStorage, bool useManagedIdentity)
+        public ApplicationModule(bool useMockData, bool useAzureStorage)
         {
             this.useMockData = useMockData;
             this.useAzureStorage = useAzureStorage;
-            this.useManagedIdentity = useManagedIdentity;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            if (this.useMockData)
+            if (useMockData)
             {
                 builder.RegisterType<CatalogServiceMock>()
                     .As<ICatalogService>()
@@ -33,7 +31,7 @@ namespace eShopModernizedWebForms.Modules
                     .InstancePerLifetimeScope();
             }
 
-            if (this.useAzureStorage)
+            if (useAzureStorage)
             {
                 builder.RegisterType<ImageAzureStorage>()
                     .As<IImageService>()
@@ -42,31 +40,11 @@ namespace eShopModernizedWebForms.Modules
             else
             {
                 builder.RegisterType<ImageMockStorage>()
-                  .As<IImageService>()
-                  .InstancePerLifetimeScope();
+                    .As<IImageService>()
+                    .InstancePerLifetimeScope();
             }
 
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogDBInitializer>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogItemHiLoGenerator>()
-                .SingleInstance();
-
-            if (this.useManagedIdentity)
-            {
-                builder.RegisterType<ManagedIdentitySqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<AppSettingsSqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
+            builder.RegisterType<CatalogItemHiLoGenerator>().SingleInstance();
         }
     }
 }

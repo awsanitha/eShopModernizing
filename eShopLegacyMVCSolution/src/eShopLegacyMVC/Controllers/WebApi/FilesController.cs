@@ -1,41 +1,34 @@
-﻿using eShopLegacy.Utilities;
+using eShopLegacy.Utilities;
 using eShopLegacyMVC.Services;
-using System;
+using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace eShopLegacyMVC.Controllers.WebApi
 {
-    public class FilesController : ApiController
+    [ApiController]
+    [Route("api/[controller]")]
+    public class FilesController : ControllerBase
     {
-        private ICatalogService _service;
+        private readonly ICatalogService _service;
 
         public FilesController(ICatalogService service)
         {
             _service = service;
         }
 
-        // GET api/<controller>
-        public HttpResponseMessage Get()
+        // GET api/files
+        [HttpGet]
+        public IActionResult Get()
         {
             var brands = _service.GetCatalogBrands()
-                .Select(b => new BrandDTO
-                {
-                    Id = b.Id,
-                    Brand = b.Brand
-                }).ToList();
+                .Select(b => new BrandDTO { Id = b.Id, Brand = b.Brand })
+                .ToList();
             var serializer = new Serializing();
-            var response = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StreamContent(serializer.SerializeBinary(brands))
-            };
-
-            return response;
+            return File(serializer.SerializeBinary(brands), "application/octet-stream");
         }
 
-        [Serializable]
+        [System.Serializable]
         public class BrandDTO
         {
             public int Id { get; set; }
