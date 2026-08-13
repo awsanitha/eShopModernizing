@@ -1,93 +1,31 @@
-﻿using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedMVC
 {
-    public class CatalogConfiguration
+    public static class CatalogConfiguration
     {
+        private static IConfiguration? _configuration;
 
-        public static bool UseMockData
+        public static void Initialize(IConfiguration configuration)
         {
-            get
-            {
-                return IsEnabled("UseMockData");
-            }
+            _configuration = configuration;
         }
 
-        public static bool UseAzureStorage
-        {
-            get
-            {
-                return IsEnabled("UseAzureStorage");
-            }
-        }
+        public static bool UseMockData => GetBool("UseMockData");
+        public static bool UseAzureStorage => GetBool("UseAzureStorage");
+        public static bool UseManagedIdentity => GetBool("UseManagedIdentity");
+        public static bool UseCustomizationData => GetBool("UseCustomizationData");
+        public static string StorageConnectionString => _configuration?["StorageConnectionString"] ?? "";
+        public static string AppInsightsInstrumentationKey => _configuration?["AppInsightsInstrumentationKey"] ?? "";
+        public static bool UseAzureActiveDirectory => GetBool("UseAzureActiveDirectory");
+        public static string AzureActiveDirectoryClientId => _configuration?["AzureActiveDirectoryClientId"] ?? "";
+        public static string AzureActiveDirectoryTenant => _configuration?["AzureActiveDirectoryTenant"] ?? "";
+        public static string PostLogoutRedirectUri => _configuration?["PostLogoutRedirectUri"] ?? "";
 
-        public static bool UseManagedIdentity
+        private static bool GetBool(string key)
         {
-            get
-            {
-                return IsEnabled("UseAzureManagedIdentity");
-            }
-        }
-
-        public static bool UseCustomizationData
-        {
-            get
-            {
-                return IsEnabled("UseCustomizationData");
-            }
-        }
-
-        public static string StorageConnectionString
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["StorageConnectionString"];
-            }
-        }
-
-        public static string AppInsightsInstrumentationKey
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
-            }
-        }
-
-        public static bool UseAzureActiveDirectory
-        {
-            get
-            {
-                return IsEnabled("UseAzureActiveDirectory");
-            }
-        }
-
-        public static string AzureActiveDirectoryClientId
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryClientId"];
-            }
-        }
-
-        public static string AzureActiveDirectoryTenant
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryTenant"];
-            }
-        }
-
-        public static string PostLogoutRedirectUri
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["PostLogoutRedirectUri"];
-            }
-        }
-
-        private static bool IsEnabled(string configurationKey)
-        {
-            return bool.Parse(ConfigurationManager.AppSettings[configurationKey]);
+            var value = _configuration?[key];
+            return bool.TryParse(value, out var result) && result;
         }
     }
 }

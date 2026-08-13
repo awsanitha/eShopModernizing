@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Web.Mvc;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using eShopModernizedMVC.Models;
 using eShopModernizedMVC.Services;
-using System.IO;
 using log4net;
 
 namespace eShopModernizedMVC.Controllers
 {
     public class CatalogController : Controller
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(CatalogController));
 
         private readonly ICatalogService _service;
         private readonly IImageService _imageService;
@@ -22,7 +23,7 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // GET /[?pageSize=3&pageIndex=10]
-        public ActionResult Index(int pageSize = 10, int pageIndex = 0)
+        public IActionResult Index(int pageSize = 10, int pageIndex = 0)
         {
             _log.Info($"Now loading... /Catalog/Index?pageSize={pageSize}&pageIndex={pageIndex}");
             var paginatedItems = _service.GetCatalogItemsPaginated(pageSize, pageIndex);
@@ -31,17 +32,17 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // GET: Catalog/Details/5
-        public ActionResult Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             _log.Info($"Now loading... /Catalog/Details?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
 
@@ -50,7 +51,7 @@ namespace eShopModernizedMVC.Controllers
 
         // GET: Catalog/Create
         [Authorize]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             _log.Info($"Now loading... /Catalog/Create");
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand");
@@ -64,11 +65,9 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // POST: Catalog/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Create([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public IActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Create?catalogItemName={catalogItem.Name}");
             if (ModelState.IsValid)
@@ -95,11 +94,11 @@ namespace eShopModernizedMVC.Controllers
 
         // GET: Catalog/Edit/5
         [Authorize]
-        public ActionResult Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             _log.Info($"Now loading... /Catalog/Edit?id={id}");
@@ -107,7 +106,7 @@ namespace eShopModernizedMVC.Controllers
 
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
@@ -117,11 +116,9 @@ namespace eShopModernizedMVC.Controllers
         }
 
         // POST: Catalog/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public IActionResult Edit([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Edit?id={catalogItem.Id}");
             if (ModelState.IsValid)
@@ -144,17 +141,17 @@ namespace eShopModernizedMVC.Controllers
 
         // GET: Catalog/Delete/5
         [Authorize]
-        public ActionResult Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             _log.Info($"Now loading... /Catalog/Delete?id={id}");
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
 
@@ -164,21 +161,12 @@ namespace eShopModernizedMVC.Controllers
         // POST: Catalog/Delete/5
         [HttpPost, ActionName("Delete")]
         [Authorize]
-        public ActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
             _log.Info($"Now processing... /Catalog/DeleteConfirmed?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id);
             _service.RemoveCatalogItem(catalogItem);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _service.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         private void ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
@@ -195,4 +183,3 @@ namespace eShopModernizedMVC.Controllers
         }
     }
 }
-

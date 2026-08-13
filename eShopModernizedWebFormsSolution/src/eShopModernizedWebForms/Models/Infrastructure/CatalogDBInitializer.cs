@@ -1,33 +1,33 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedWebForms.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<CatalogDBContext>
+    public class CatalogDBInitializer
     {
         private const string DBCatalogSequenceName = "catalog_type_hilo";
         private const string DBBrandSequenceName = "catalog_brand_hilo";
-        private const string CatalogItemHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_hilo.Sequence.sql";
-        private const string CatalogBrandHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_brand_hilo.Sequence.sql";
-        private const string CatalogTypeHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_type_hilo.Sequence.sql";
+        private const string CatalogItemHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_hilo.Sequence.sql";
+        private const string CatalogBrandHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_brand_hilo.Sequence.sql";
+        private const string CatalogTypeHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_type_hilo.Sequence.sql";
 
         private CatalogItemHiLoGenerator indexGenerator;
         private bool useCustomizationData;
 
-        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator)
+        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator, IConfiguration configuration)
         {
             this.indexGenerator = indexGenerator;
-            useCustomizationData = CatalogConfiguration.UseCustomizationData;
+            useCustomizationData = configuration.GetValue<bool>("UseCustomizationData");
         }
 
-        protected override void Seed(CatalogDBContext context)
+        public void Seed(CatalogDBContext context)
         {
             ExecuteScript(context, CatalogItemHiLoSequenceScript);
             ExecuteScript(context, CatalogBrandHiLoSequenceScript);
@@ -91,7 +91,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
 
         private IEnumerable<CatalogType> GetCatalogTypesFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = AppDomain.CurrentDomain.BaseDirectory;
             string csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "CatalogTypes.csv");
 
             if (!File.Exists(csvFileCatalogTypes))
@@ -127,7 +127,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
 
         static IEnumerable<CatalogBrand> GetCatalogBrandsFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = AppDomain.CurrentDomain.BaseDirectory;
             string csvFileCatalogBrands = Path.Combine(contentRootPath, "Setup", "CatalogBrands.csv");
 
             if (!File.Exists(csvFileCatalogBrands))
@@ -163,7 +163,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
 
         static IEnumerable<CatalogItem> GetCatalogItemsFromFile(CatalogDBContext context)
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = AppDomain.CurrentDomain.BaseDirectory;
             string csvFileCatalogItems = Path.Combine(contentRootPath, "Setup", "CatalogItems.csv");
 
             if (!File.Exists(csvFileCatalogItems))
@@ -250,7 +250,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
                     }
                     else
                     {
-                        throw new Exception($"restockThreshold={restockThreshold} is not a valid integer");
+                        throw new Exception($"restockThreshold={restockThresholdString} is not a valid integer");
                     }
                 }
             }
@@ -267,7 +267,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
                     }
                     else
                     {
-                        throw new Exception($"maxStockThreshold={maxStockThreshold} is not a valid integer");
+                        throw new Exception($"maxStockThreshold={maxStockThresholdString} is not a valid integer");
                     }
                 }
             }
@@ -298,7 +298,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
 
             if (csvheaders.Count() < requiredHeaders.Count())
             {
-                throw new Exception($"requiredHeader count '{ requiredHeaders.Count()}' is bigger then csv header count '{csvheaders.Count()}' ");
+                throw new Exception($"requiredHeader count '{requiredHeaders.Count()}' is bigger then csv header count '{csvheaders.Count()}' ");
             }
 
             if (optionalHeaders != null)
@@ -322,15 +322,14 @@ namespace eShopModernizedWebForms.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dBSequenceName)
         {
-            var rawQuery = context.Database.SqlQuery<Int64>($"SELECT NEXT VALUE FOR {dBSequenceName}");
-            var sequenceId = (int)rawQuery.Single();
+            var sequenceId = (int)context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dBSequenceName}").ToList().Single();
             return sequenceId;
         }
 
         private void ExecuteScript(CatalogDBContext context, string scriptFile)
         {
             var scriptFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, scriptFile);
-            context.Database.ExecuteSqlCommand(File.ReadAllText(scriptFilePath));
+            context.Database.ExecuteSqlRaw(File.ReadAllText(scriptFilePath));
         }
 
         private void AddCatalogItemPictures()
@@ -339,7 +338,7 @@ namespace eShopModernizedWebForms.Models.Infrastructure
             {
                 return;
             }
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = AppDomain.CurrentDomain.BaseDirectory;
             DirectoryInfo picturePath = new DirectoryInfo(Path.Combine(contentRootPath, "Pics"));
             foreach (FileInfo file in picturePath.GetFiles())
             {

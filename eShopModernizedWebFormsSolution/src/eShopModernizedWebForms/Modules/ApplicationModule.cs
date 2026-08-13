@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using eShopModernizedWebForms.Models;
 using eShopModernizedWebForms.Models.Infrastructure;
 using eShopModernizedWebForms.Services;
@@ -46,27 +46,11 @@ namespace eShopModernizedWebForms.Modules
                   .InstancePerLifetimeScope();
             }
 
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
             builder.RegisterType<CatalogDBInitializer>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<CatalogItemHiLoGenerator>()
                 .SingleInstance();
-
-            if (this.useManagedIdentity)
-            {
-                builder.RegisterType<ManagedIdentitySqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<AppSettingsSqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
         }
     }
 }

@@ -1,0 +1,61 @@
+@model CatalogItem
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PictureFileName"></label>
+        <input asp-for="PictureFileName" class="form-control" />
+        <span asp-validation-for="PictureFileName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CatalogBrandId"></label>
+        <select asp-for="CatalogBrandId" asp-items="@(ViewBag.CatalogBrandId as SelectList)" class="form-control"></select>
+        <span asp-validation-for="CatalogBrandId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CatalogTypeId"></label>
+        <select asp-for="CatalogTypeId" asp-items="@(ViewBag.CatalogTypeId as SelectList)" class="form-control"></select>
+        <span asp-validation-for="CatalogTypeId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="AvailableStock"></label>
+        <input asp-for="AvailableStock" class="form-control" />
+        <span asp-validation-for="AvailableStock" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RestockThreshold"></label>
+        <input asp-for="RestockThreshold" class="form-control" />
+        <span asp-validation-for="RestockThreshold" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MaxStockThreshold"></label>
+        <input asp-for="MaxStockThreshold" class="form-control" />
+        <span asp-validation-for="MaxStockThreshold" class="text-danger"></span>
+    </div>
+    <div class="form-group form-check">
+        <input asp-for="OnReorder" class="form-check-input" />
+        <label asp-for="OnReorder" class="form-check-label"></label>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
