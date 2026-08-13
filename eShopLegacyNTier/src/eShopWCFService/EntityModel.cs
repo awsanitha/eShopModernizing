@@ -1,7 +1,4 @@
-using System;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 
@@ -9,10 +6,9 @@ namespace eShopWCFService
 {
     public partial class EntityModel : DbContext
     {
-        public EntityModel()
-            : base(CatalogConfiguration.ConnectionString)
+        public EntityModel(DbContextOptions<EntityModel> options)
+            : base(options)
         {
-            Database.SetInitializer(new CatalogDBInitializer());
         }
 
         public virtual DbSet<CatalogBrand> CatalogBrands { get; set; }
@@ -21,8 +17,10 @@ namespace eShopWCFService
         public virtual DbSet<CatalogType> CatalogTypes { get; set; }
         public virtual DbSet<DiscountItem> DiscountItems { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<CatalogBrand>()
                 .Property(e => e.Brand)
                 .IsUnicode(false);
@@ -31,13 +29,12 @@ namespace eShopWCFService
                 .Property(e => e.Price)
                 .HasPrecision(19, 4);
 
-            modelBuilder.Entity<CatalogItemsStock>();
+            modelBuilder.Entity<CatalogItemsStock>()
+                .ToTable("CatalogItemsStock");
 
             modelBuilder.Entity<CatalogType>()
                 .Property(e => e.Type)
                 .IsUnicode(false);
-
-            modelBuilder.Entity<DiscountItem>();
         }
     }
 }

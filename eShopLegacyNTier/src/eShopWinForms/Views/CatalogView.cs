@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Linq.Expressions;
 using eShopWinForms.eShopServiceReference;
-using System.Net.Http;
 using eShopWinForms.Controllers;
 
 namespace eShopWinForms

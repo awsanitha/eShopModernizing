@@ -1,12 +1,10 @@
-﻿using eShopWCFService.Models;
+using CoreWCF;
+using eShopWCFService.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
 
 namespace eShopWCFService
 {
@@ -14,11 +12,6 @@ namespace eShopWCFService
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
-
-        public CatalogService()
-        {
-            ents = new EntityModel();
-        }
 
         public CatalogService(EntityModel ents)
         {
@@ -78,7 +71,7 @@ namespace eShopWCFService
 
         public void RemoveCatalogItem(CatalogItem catalogItem)
         {
-            ents.CatalogItems.Remove(catalogItem);
+            ents.Entry(catalogItem).State = EntityState.Deleted;
             ents.SaveChanges();
         }
 

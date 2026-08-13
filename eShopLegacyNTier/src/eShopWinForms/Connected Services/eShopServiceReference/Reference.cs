@@ -570,17 +570,9 @@ namespace eShopWinForms.eShopServiceReference {
         public CatalogServiceClient() {
         }
         
-        public CatalogServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
-        }
+        // Note: constructors taking a string endpointConfigurationName are not supported
+        // by the System.ServiceModel.Http NuGet package. Use the explicit Binding + EndpointAddress
+        // constructor instead (see Program.cs).
         
         public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
