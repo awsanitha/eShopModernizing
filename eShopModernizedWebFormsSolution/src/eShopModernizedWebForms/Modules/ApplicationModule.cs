@@ -1,21 +1,20 @@
 ﻿using Autofac;
 using eShopModernizedWebForms.Models;
-using eShopModernizedWebForms.Models.Infrastructure;
 using eShopModernizedWebForms.Services;
 
 namespace eShopModernizedWebForms.Modules
 {
     public class ApplicationModule : Module
     {
-        private bool useMockData;
-        private bool useAzureStorage;
-        private bool useManagedIdentity;
+        private readonly bool useMockData;
+        private readonly bool useAzureStorage;
+        private readonly string webRootPath;
 
-        public ApplicationModule(bool useMockData, bool useAzureStorage, bool useManagedIdentity)
+        public ApplicationModule(bool useMockData, bool useAzureStorage, string webRootPath)
         {
             this.useMockData = useMockData;
             this.useAzureStorage = useAzureStorage;
-            this.useManagedIdentity = useManagedIdentity;
+            this.webRootPath = webRootPath;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -35,38 +34,19 @@ namespace eShopModernizedWebForms.Modules
 
             if (this.useAzureStorage)
             {
-                builder.RegisterType<ImageAzureStorage>()
+                builder.Register(c => new ImageAzureStorage(webRootPath))
                     .As<IImageService>()
                     .InstancePerLifetimeScope();
             }
             else
             {
-                builder.RegisterType<ImageMockStorage>()
+                builder.Register(c => new ImageMockStorage(webRootPath))
                   .As<IImageService>()
                   .InstancePerLifetimeScope();
             }
 
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogDBInitializer>()
-                .InstancePerLifetimeScope();
-
             builder.RegisterType<CatalogItemHiLoGenerator>()
                 .SingleInstance();
-
-            if (this.useManagedIdentity)
-            {
-                builder.RegisterType<ManagedIdentitySqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<AppSettingsSqlConnectionFactory>()
-                    .As<ISqlConnectionFactory>()
-                    .SingleInstance();
-            }
         }
     }
 }

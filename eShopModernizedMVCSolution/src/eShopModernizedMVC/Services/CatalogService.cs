@@ -1,6 +1,6 @@
-﻿using eShopModernizedMVC.Models;
+using eShopModernizedMVC.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using eShopModernizedMVC.ViewModel;
 
@@ -64,11 +64,6 @@ namespace eShopModernizedMVC.Services
         {
             db.CatalogItems.Remove(catalogItem);
             db.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            db.Dispose();
         }
     }
 }

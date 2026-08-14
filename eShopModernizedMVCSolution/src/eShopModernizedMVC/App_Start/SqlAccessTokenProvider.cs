@@ -1,44 +1,41 @@
-﻿using Microsoft.Azure.Services.AppAuthentication;
-using System.Configuration;
-using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedMVC
 {
     public interface ISqlConnectionFactory
     {
-        SqlConnection CreateConnection();
+        string GetConnectionString();
     }
 
     public class ManagedIdentitySqlConnectionFactory : ISqlConnectionFactory
     {
-        private readonly AzureServiceTokenProvider _provider;
+        private readonly IConfiguration _configuration;
 
-        public ManagedIdentitySqlConnectionFactory()
+        public ManagedIdentitySqlConnectionFactory(IConfiguration configuration)
         {
-            _provider = new AzureServiceTokenProvider();
+            _configuration = configuration;
         }
 
-        public SqlConnection CreateConnection()
+        public string GetConnectionString()
         {
-            return new SqlConnection
-            {
-                AccessToken = AccessToken,
-                ConnectionString = ConfigurationManager.ConnectionStrings["CatalogDBContext"].ConnectionString
-            };
+            // When using managed identity, Authentication=Active Directory Managed Identity
+            // is expected to be part of the configured connection string.
+            return _configuration.GetConnectionString("CatalogDBContext");
         }
-
-        private string AccessToken
-            => _provider.GetAccessTokenAsync("https://database.windows.net/").ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     public class AppSettingsSqlConnectionFactory : ISqlConnectionFactory
     {
-        public SqlConnection CreateConnection()
+        private readonly IConfiguration _configuration;
+
+        public AppSettingsSqlConnectionFactory(IConfiguration configuration)
         {
-            return new SqlConnection
-            {
-                ConnectionString = ConfigurationManager.ConnectionStrings["CatalogDBContext"].ConnectionString
-            };
+            _configuration = configuration;
+        }
+
+        public string GetConnectionString()
+        {
+            return _configuration.GetConnectionString("CatalogDBContext");
         }
     }
 }

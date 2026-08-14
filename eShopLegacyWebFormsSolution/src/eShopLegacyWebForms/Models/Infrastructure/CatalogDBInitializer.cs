@@ -1,35 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
-using System.Web.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopLegacyWebForms.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<CatalogDBContext>
+    public class CatalogDBInitializer
     {
         private const string DBCatalogSequenceName = "catalog_type_hilo";
         private const string DBBrandSequenceName = "catalog_brand_hilo";
-        private const string CatalogItemHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_hilo.Sequence.sql";
-        private const string CatalogBrandHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_brand_hilo.Sequence.sql";
-        private const string CatalogTypeHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_type_hilo.Sequence.sql";
+        private const string CatalogItemHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_hilo.Sequence.sql";
+        private const string CatalogBrandHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_brand_hilo.Sequence.sql";
+        private const string CatalogTypeHiLoSequenceScript = @"Models/Infrastructure/dbo.catalog_type_hilo.Sequence.sql";
 
-        private CatalogItemHiLoGenerator indexGenerator;
-        private bool useCustomizationData;
+        private readonly CatalogItemHiLoGenerator indexGenerator;
+        private readonly bool useCustomizationData;
+        private readonly string contentRootPath;
 
-        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator)
+        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator, bool useCustomizationData, string contentRootPath)
         {
             this.indexGenerator = indexGenerator;
-            useCustomizationData = bool.Parse(ConfigurationManager.AppSettings["UseCustomizationData"]);
+            this.useCustomizationData = useCustomizationData;
+            this.contentRootPath = contentRootPath;
         }
 
-        protected override void Seed(CatalogDBContext context)
+        public void Initialize(CatalogDBContext context)
+        {
+            var created = context.Database.EnsureCreated();
+
+            if (!created && context.CatalogItems.Any())
+            {
+                return;
+            }
+
+            Seed(context);
+        }
+
+        private void Seed(CatalogDBContext context)
         {
             ExecuteScript(context, CatalogItemHiLoSequenceScript);
             ExecuteScript(context, CatalogBrandHiLoSequenceScript);
@@ -93,7 +104,6 @@ namespace eShopLegacyWebForms.Models.Infrastructure
 
         private IEnumerable<CatalogType> GetCatalogTypesFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
             string csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "CatalogTypes.csv");
 
             if (!File.Exists(csvFileCatalogTypes))
@@ -127,9 +137,8 @@ namespace eShopLegacyWebForms.Models.Infrastructure
             };
         }
 
-        static IEnumerable<CatalogBrand> GetCatalogBrandsFromFile()
+        IEnumerable<CatalogBrand> GetCatalogBrandsFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
             string csvFileCatalogBrands = Path.Combine(contentRootPath, "Setup", "CatalogBrands.csv");
 
             if (!File.Exists(csvFileCatalogBrands))
@@ -163,9 +172,8 @@ namespace eShopLegacyWebForms.Models.Infrastructure
             };
         }
 
-        static IEnumerable<CatalogItem> GetCatalogItemsFromFile(CatalogDBContext context)
+        IEnumerable<CatalogItem> GetCatalogItemsFromFile(CatalogDBContext context)
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
             string csvFileCatalogItems = Path.Combine(contentRootPath, "Setup", "CatalogItems.csv");
 
             if (!File.Exists(csvFileCatalogItems))
@@ -324,15 +332,15 @@ namespace eShopLegacyWebForms.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dBSequenceName)
         {
-            var rawQuery = context.Database.SqlQuery<Int64>($"SELECT NEXT VALUE FOR {dBSequenceName}");
-            var sequenceId = (int)rawQuery.Single();
+            var rawQuery = context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dBSequenceName}");
+            var sequenceId = (int)rawQuery.AsEnumerable().Single();
             return sequenceId;
         }
 
         private void ExecuteScript(CatalogDBContext context, string scriptFile)
         {
             var scriptFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, scriptFile);
-            context.Database.ExecuteSqlCommand(File.ReadAllText(scriptFilePath));
+            context.Database.ExecuteSqlRaw(File.ReadAllText(scriptFilePath));
         }
 
         private void AddCatalogItemPictures()
@@ -341,7 +349,7 @@ namespace eShopLegacyWebForms.Models.Infrastructure
             {
                 return;
             }
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+
             DirectoryInfo picturePath = new DirectoryInfo(Path.Combine(contentRootPath, "Pics"));
             foreach (FileInfo file in picturePath.GetFiles())
             {

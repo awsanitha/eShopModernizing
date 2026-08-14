@@ -1,33 +1,47 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopModernizedMVC.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<CatalogDBContext>
+    public class CatalogDBInitializer
     {
         private const string DBCatalogSequenceName = "catalog_type_hilo";
         private const string DBBrandSequenceName = "catalog_brand_hilo";
-        private const string CatalogItemHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_hilo.Sequence.sql";
-        private const string CatalogBrandHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_brand_hilo.Sequence.sql";
-        private const string CatalogTypeHiLoSequenceScript = @"Models\Infrastructure\dbo.catalog_type_hilo.Sequence.sql";
+        private const string CatalogItemHiLoSequenceScript = "Models/Infrastructure/dbo.catalog_hilo.Sequence.sql";
+        private const string CatalogBrandHiLoSequenceScript = "Models/Infrastructure/dbo.catalog_brand_hilo.Sequence.sql";
+        private const string CatalogTypeHiLoSequenceScript = "Models/Infrastructure/dbo.catalog_type_hilo.Sequence.sql";
 
-        private CatalogItemHiLoGenerator indexGenerator;
+        private readonly CatalogItemHiLoGenerator indexGenerator;
+        private readonly IWebHostEnvironment hostEnvironment;
         private bool useCustomizationData;
 
-        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator)
+        public CatalogDBInitializer(CatalogItemHiLoGenerator indexGenerator, IWebHostEnvironment hostEnvironment)
         {
             this.indexGenerator = indexGenerator;
+            this.hostEnvironment = hostEnvironment;
             useCustomizationData = CatalogConfiguration.UseCustomizationData;
         }
 
-        protected override void Seed(CatalogDBContext context)
+        public void Initialize(CatalogDBContext context)
+        {
+            var created = context.Database.EnsureCreated();
+
+            if (!created)
+            {
+                return;
+            }
+
+            Seed(context);
+        }
+
+        private void Seed(CatalogDBContext context)
         {
             ExecuteScript(context, CatalogItemHiLoSequenceScript);
             ExecuteScript(context, CatalogBrandHiLoSequenceScript);
@@ -37,7 +51,6 @@ namespace eShopModernizedMVC.Models.Infrastructure
             AddCatalogBrands(context);
             AddCatalogItems(context);
             AddCatalogItemPictures();
-            
         }
 
         private void AddCatalogTypes(CatalogDBContext context)
@@ -92,7 +105,7 @@ namespace eShopModernizedMVC.Models.Infrastructure
 
         private IEnumerable<CatalogType> GetCatalogTypesFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = hostEnvironment.ContentRootPath;
             string csvFileCatalogTypes = Path.Combine(contentRootPath, "Setup", "CatalogTypes.csv");
 
             if (!File.Exists(csvFileCatalogTypes))
@@ -126,9 +139,9 @@ namespace eShopModernizedMVC.Models.Infrastructure
             };
         }
 
-        static IEnumerable<CatalogBrand> GetCatalogBrandsFromFile()
+        IEnumerable<CatalogBrand> GetCatalogBrandsFromFile()
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = hostEnvironment.ContentRootPath;
             string csvFileCatalogBrands = Path.Combine(contentRootPath, "Setup", "CatalogBrands.csv");
 
             if (!File.Exists(csvFileCatalogBrands))
@@ -162,9 +175,9 @@ namespace eShopModernizedMVC.Models.Infrastructure
             };
         }
 
-        static IEnumerable<CatalogItem> GetCatalogItemsFromFile(CatalogDBContext context)
+        IEnumerable<CatalogItem> GetCatalogItemsFromFile(CatalogDBContext context)
         {
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = hostEnvironment.ContentRootPath;
             string csvFileCatalogItems = Path.Combine(contentRootPath, "Setup", "CatalogItems.csv");
 
             if (!File.Exists(csvFileCatalogItems))
@@ -323,15 +336,17 @@ namespace eShopModernizedMVC.Models.Infrastructure
 
         private static int GetSequenceIdFromSelectedDBSequence(CatalogDBContext context, string dBSequenceName)
         {
-            var rawQuery = context.Database.SqlQuery<Int64>($"SELECT NEXT VALUE FOR {dBSequenceName}");
-            var sequenceId = (int)rawQuery.Single();
+#pragma warning disable EF1002 // dBSequenceName is an internal constant, not user input.
+            var rawQuery = context.Database.SqlQueryRaw<long>($"SELECT NEXT VALUE FOR {dBSequenceName}");
+#pragma warning restore EF1002
+            var sequenceId = (int)rawQuery.AsEnumerable().Single();
             return sequenceId;
         }
 
         private void ExecuteScript(CatalogDBContext context, string scriptFile)
         {
-            var scriptFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, scriptFile);
-            context.Database.ExecuteSqlCommand(File.ReadAllText(scriptFilePath));
+            var scriptFilePath = Path.Combine(hostEnvironment.ContentRootPath, scriptFile);
+            context.Database.ExecuteSqlRaw(File.ReadAllText(scriptFilePath));
         }
 
         private void AddCatalogItemPictures()
@@ -340,13 +355,13 @@ namespace eShopModernizedMVC.Models.Infrastructure
             {
                 return;
             }
-            var contentRootPath = HostingEnvironment.ApplicationPhysicalPath;
+            var contentRootPath = hostEnvironment.WebRootPath;
             DirectoryInfo picturePath = new DirectoryInfo(Path.Combine(contentRootPath, "Pics"));
             foreach (FileInfo file in picturePath.GetFiles())
             {
                 file.Delete();
             }
-            
+
             string zipFileCatalogItemPictures = Path.Combine(contentRootPath, "Setup", "CatalogItems.zip");
             ZipFile.ExtractToDirectory(zipFileCatalogItemPictures, picturePath.ToString());
         }

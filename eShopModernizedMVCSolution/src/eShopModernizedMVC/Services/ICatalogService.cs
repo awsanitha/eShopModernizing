@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using eShopModernizedMVC.Models;
-using System;
 using eShopModernizedMVC.ViewModel;
 
 namespace eShopModernizedMVC.Services
 {
-    public interface ICatalogService : IDisposable
+    public interface ICatalogService
     {
         CatalogItem FindCatalogItem(int id);
         IEnumerable<CatalogBrand> GetCatalogBrands();

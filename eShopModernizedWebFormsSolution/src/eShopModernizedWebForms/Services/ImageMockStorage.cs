@@ -1,11 +1,18 @@
-﻿using System.Web;
-using eShopModernizedWebForms.Models;
+﻿using eShopModernizedWebForms.Models;
+using Microsoft.AspNetCore.Http;
 using System.IO;
 
 namespace eShopModernizedWebForms.Services
 {
     public class ImageMockStorage : IImageService
     {
+        private readonly string webRootPath;
+
+        public ImageMockStorage(string webRootPath)
+        {
+            this.webRootPath = webRootPath;
+        }
+
         public string BaseUrl()
         {
             return GetBaseUrlImages();
@@ -32,17 +39,16 @@ namespace eShopModernizedWebForms.Services
 
         }
 
-        public string UploadTempImage(HttpPostedFile file, int? catalogItemId)
+        public string UploadTempImage(IFormFile file, int? catalogItemId)
         {
             if (!catalogItemId.HasValue)
                 return UrlDefaultImage();
 
-            var pathPics = HttpContext.Current.Server.MapPath("~/Pics");
+            var pathPics = Path.Combine(webRootPath, "Pics");
             var imageExists = File.Exists(Path.Combine(pathPics, catalogItemId.Value + ".png"));
 
             if (imageExists)
                 return BaseUrl() + catalogItemId.Value + ".png";
-
 
             return UrlDefaultImage();
         }

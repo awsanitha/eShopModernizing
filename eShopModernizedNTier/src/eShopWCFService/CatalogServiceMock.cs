@@ -1,4 +1,4 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -37,14 +37,14 @@ namespace eShopWCFService
                 (typeFilterIsNull ? true : x.CatalogTypeId == typeIdFilter)).ToList();
         }
 
-        public IEnumerable<CatalogType> GetCatalogTypes()
+        public List<CatalogType> GetCatalogTypes()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+            return catalogTypes;
         }
 
-        public IEnumerable<CatalogBrand> GetCatalogBrands()
+        public List<CatalogBrand> GetCatalogBrands()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogBrands();
+            return catalogBrands;
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)
@@ -82,19 +82,10 @@ namespace eShopWCFService
             return items;
         }
 
-        List<CatalogBrand> ICatalogService.GetCatalogBrands()
-        {
-            return catalogBrands;
-        }
-
-        List<CatalogType> ICatalogService.GetCatalogTypes()
-        {
-            return catalogTypes;
-        }
-
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date)).AvailableStock;
+            var stock = catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date));
+            return stock != null ? stock.AvailableStock : 0;
         }
 
         public void CreateAvailableStock(CatalogItemsStock cat)

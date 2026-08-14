@@ -1,7 +1,11 @@
-﻿using Autofac;
+using Autofac;
+using eShopModernizedMVC;
 using eShopModernizedMVC.Models;
 using eShopModernizedMVC.Models.Infrastructure;
 using eShopModernizedMVC.Services;
+using Microsoft.EntityFrameworkCore;
+// ISqlConnectionFactory, ManagedIdentitySqlConnectionFactory, AppSettingsSqlConnectionFactory
+// are declared in the root eShopModernizedMVC namespace (App_Start/SqlAccessTokenProvider.cs)
 
 namespace eShopModernizedMVC.Modules
 {
@@ -45,12 +49,19 @@ namespace eShopModernizedMVC.Modules
                   .InstancePerLifetimeScope();
             }
 
+            if (!this.useMockData)
+            {
+                builder.Register(c =>
+                {
+                    var connectionFactory = c.Resolve<ISqlConnectionFactory>();
+                    var optionsBuilder = new DbContextOptionsBuilder<CatalogDBContext>();
+                    optionsBuilder.UseSqlServer(connectionFactory.GetConnectionString());
+                    return new CatalogDBContext(optionsBuilder.Options);
+                }).InstancePerLifetimeScope();
 
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogDBInitializer>()
-                .InstancePerLifetimeScope();
+                builder.RegisterType<CatalogDBInitializer>()
+                    .InstancePerLifetimeScope();
+            }
 
             builder.RegisterType<CatalogItemHiLoGenerator>()
                 .SingleInstance();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopModernizedWebForms.Models
 {
@@ -16,8 +17,8 @@ namespace eShopModernizedWebForms.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    var rawQuery = db.Database.SqlQueryRaw<long>("SELECT NEXT VALUE FOR catalog_hilo AS Value;");
+                    sequenceId = (int)rawQuery.AsEnumerable().Single();
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }

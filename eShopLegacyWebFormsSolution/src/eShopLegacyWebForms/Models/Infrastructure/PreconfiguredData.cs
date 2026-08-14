@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace eShopLegacyWebForms.Models.Infrastructure
+﻿namespace eShopLegacyWebForms.Models.Infrastructure
 {
     public static class PreconfiguredData
     {
-        public static List<CatalogItem> GetPreconfiguredCatalogItems()
+        public static System.Collections.Generic.List<CatalogItem> GetPreconfiguredCatalogItems()
         {
-            return new List<CatalogItem>()
+            return new System.Collections.Generic.List<CatalogItem>()
             {
                 new CatalogItem { Id =1, CatalogTypeId = 2, CatalogBrandId = 2, AvailableStock = 100, Description = ".NET Bot Black Hoodie", Name = ".NET Bot Black Hoodie", Price = 19.5M, PictureFileName = "1.png" },
                 new CatalogItem { Id =2, CatalogTypeId = 1, CatalogBrandId = 2, AvailableStock = 100, Description = ".NET Black & White Mug", Name = ".NET Black & White Mug", Price= 8.50M, PictureFileName = "2.png" },
@@ -26,9 +21,9 @@ namespace eShopLegacyWebForms.Models.Infrastructure
             };
         }
 
-        public static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
+        public static System.Collections.Generic.IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
         {
-            return new List<CatalogBrand>()
+            return new System.Collections.Generic.List<CatalogBrand>()
             {
                 new CatalogBrand() { Id =1, Brand = "Azure"},
                 new CatalogBrand() { Id =2, Brand = ".NET" },
@@ -38,9 +33,9 @@ namespace eShopLegacyWebForms.Models.Infrastructure
             };
         }
 
-        public static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
+        public static System.Collections.Generic.IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
         {
-            return new List<CatalogType>()
+            return new System.Collections.Generic.List<CatalogType>()
             {
                 new CatalogType() { Id =1, Type = "Mug"},
                 new CatalogType() { Id =2, Type = "T-Shirt" },

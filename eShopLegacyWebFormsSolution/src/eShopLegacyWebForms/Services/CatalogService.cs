@@ -1,9 +1,8 @@
 ﻿using System;
 using eShopLegacyWebForms.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using eShopLegacyWebForms.ViewModel;
 
 namespace eShopLegacyWebForms.Services

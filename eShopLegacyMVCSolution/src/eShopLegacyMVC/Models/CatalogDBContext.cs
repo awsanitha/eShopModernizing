@@ -1,13 +1,11 @@
 ﻿using eShopLegacyMVC.Models.Infrastructure;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopLegacyMVC.Models
 {
     public class CatalogDBContext : DbContext
     {
-        public CatalogDBContext() : base("name=CatalogDBContext")
+        public CatalogDBContext(DbContextOptions<CatalogDBContext> options) : base(options)
         {
         }
 
@@ -17,7 +15,7 @@ namespace eShopLegacyMVC.Models
 
         public DbSet<CatalogType> CatalogTypes { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             ConfigureCatalogType(builder.Entity<CatalogType>());
             ConfigureCatalogBrand(builder.Entity<CatalogBrand>());
@@ -26,7 +24,7 @@ namespace eShopLegacyMVC.Models
             base.OnModelCreating(builder);
         }
 
-        void ConfigureCatalogType(EntityTypeConfiguration<CatalogType> builder)
+        void ConfigureCatalogType(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CatalogType> builder)
         {
             builder.ToTable("CatalogType");
 
@@ -40,7 +38,7 @@ namespace eShopLegacyMVC.Models
                 .HasMaxLength(100);
         }
 
-        void ConfigureCatalogBrand(EntityTypeConfiguration<CatalogBrand> builder)
+        void ConfigureCatalogBrand(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CatalogBrand> builder)
         {
             builder.ToTable("CatalogBrand");
 
@@ -54,14 +52,14 @@ namespace eShopLegacyMVC.Models
                 .HasMaxLength(100);
         }
 
-        void ConfigureCatalogItem(EntityTypeConfiguration<CatalogItem> builder)
+        void ConfigureCatalogItem(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<CatalogItem> builder)
         {
             builder.ToTable("Catalog");
 
             builder.HasKey(ci => ci.Id);
 
             builder.Property(ci => ci.Id)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None)
+                .ValueGeneratedNever()
                 .IsRequired();
 
             builder.Property(ci => ci.Name)
@@ -76,11 +74,11 @@ namespace eShopLegacyMVC.Models
 
             builder.Ignore(ci => ci.PictureUri);
 
-            builder.HasRequired<CatalogBrand>(ci => ci.CatalogBrand)
+            builder.HasOne(ci => ci.CatalogBrand)
                 .WithMany()
                 .HasForeignKey(ci => ci.CatalogBrandId);
 
-            builder.HasRequired<CatalogType>(ci => ci.CatalogType)
+            builder.HasOne(ci => ci.CatalogType)
                 .WithMany()
                 .HasForeignKey(ci => ci.CatalogTypeId);
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using eShopModernizedMVC.Models;
 using eShopModernizedMVC.Models.Infrastructure;
@@ -18,7 +18,7 @@ namespace eShopModernizedMVC.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
         {
             var items = ComposeCatalogItems(catalogItems);
-            
+
             var itemsOnPage = items
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
@@ -65,10 +65,6 @@ namespace eShopModernizedMVC.Services
             catalogItems.Remove(catalogItem);
         }
 
-        public void Dispose()
-        {
-        }
-
         private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
         {
             var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
@@ -77,7 +73,6 @@ namespace eShopModernizedMVC.Services
             items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
 
             return items;
-            ;
         }
     }
 }
