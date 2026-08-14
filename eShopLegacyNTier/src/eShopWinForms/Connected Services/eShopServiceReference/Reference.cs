@@ -570,16 +570,18 @@ namespace eShopWinForms.eShopServiceReference {
         public CatalogServiceClient() {
         }
         
+        // Note: config-name constructors are not supported on .NET Core (System.ServiceModel.Http).
+        // Use the explicit Binding+EndpointAddress constructor instead.
         public CatalogServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
+                base() {
         }
         
         public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+                base(new System.ServiceModel.BasicHttpBinding(), new System.ServiceModel.EndpointAddress(remoteAddress)) {
         }
         
         public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+                base(new System.ServiceModel.BasicHttpBinding(), remoteAddress) {
         }
         
         public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
