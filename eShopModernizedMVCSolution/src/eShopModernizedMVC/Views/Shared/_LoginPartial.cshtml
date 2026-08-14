@@ -1,5 +1,4 @@
-﻿
-@if (Request.IsAuthenticated)
+@if (User.Identity?.IsAuthenticated ?? false)
 {
     <text>
         <ul class="nav navbar-nav navbar-right">
@@ -7,7 +6,7 @@
                 Hello, @User.Identity.Name!
             </li>
             <li>
-                @Html.ActionLink("Sign out", "SignOut", "Account", routeValues: null, htmlAttributes: new { @class = "esh-login-link" })
+                @Html.ActionLink("Sign out", "SignOut", "Account", null, new { @class = "esh-login-link" })
             </li>
         </ul>
     </text>
@@ -16,7 +15,7 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
         <li>
-        @Html.ActionLink("Sign in", "SignIn", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "esh-login-link" })
+        @Html.ActionLink("Sign in", "SignIn", "Account", null, new { id = "loginLink", @class = "esh-login-link" })
         </li>
     </ul>
 }

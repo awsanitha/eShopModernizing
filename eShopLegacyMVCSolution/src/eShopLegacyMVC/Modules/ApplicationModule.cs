@@ -28,9 +28,6 @@ namespace eShopLegacyMVC.Modules
                     .InstancePerLifetimeScope();
             }
 
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
             builder.RegisterType<CatalogDBInitializer>()
                 .InstancePerLifetimeScope();
 

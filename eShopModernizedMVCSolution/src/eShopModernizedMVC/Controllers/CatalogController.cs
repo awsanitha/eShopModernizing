@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Web.Mvc;
+using System.Collections.Generic;
 using eShopModernizedMVC.Models;
 using eShopModernizedMVC.Services;
 using System.IO;
 using log4net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace eShopModernizedMVC.Controllers
 {
@@ -35,13 +36,13 @@ namespace eShopModernizedMVC.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             _log.Info($"Now loading... /Catalog/Details?id={id}");
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
 
@@ -68,7 +69,7 @@ namespace eShopModernizedMVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Create([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public ActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Create?catalogItemName={catalogItem.Name}");
             if (ModelState.IsValid)
@@ -99,7 +100,7 @@ namespace eShopModernizedMVC.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             _log.Info($"Now loading... /Catalog/Edit?id={id}");
@@ -107,7 +108,7 @@ namespace eShopModernizedMVC.Controllers
 
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
             ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
@@ -121,7 +122,7 @@ namespace eShopModernizedMVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
+        public ActionResult Edit([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder,TempImageName")] CatalogItem catalogItem)
         {
             _log.Info($"Now processing... /Catalog/Edit?id={catalogItem.Id}");
             if (ModelState.IsValid)
@@ -149,12 +150,12 @@ namespace eShopModernizedMVC.Controllers
             _log.Info($"Now loading... /Catalog/Delete?id={id}");
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             CatalogItem catalogItem = _service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             AddUriPlaceHolder(catalogItem);
 
@@ -172,15 +173,6 @@ namespace eShopModernizedMVC.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _service.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         private void ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
         {
             foreach (var catalogItem in items)
@@ -195,4 +187,3 @@ namespace eShopModernizedMVC.Controllers
         }
     }
 }
-

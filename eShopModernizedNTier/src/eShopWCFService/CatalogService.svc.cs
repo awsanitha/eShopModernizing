@@ -1,12 +1,8 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
 
 namespace eShopWCFService
 {
@@ -14,11 +10,6 @@ namespace eShopWCFService
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
-
-        public CatalogService()
-        {
-            ents = new EntityModel();
-        }
 
         public CatalogService(EntityModel ents)
         {
@@ -64,7 +55,7 @@ namespace eShopWCFService
 
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
-            var maxId = ents.CatalogItems.Max(i => i.Id);
+            var maxId = ents.CatalogItems.Any() ? ents.CatalogItems.Max(i => i.Id) : 0;
             catalogItem.Id = ++maxId;
             ents.CatalogItems.Add(catalogItem);
             ents.SaveChanges();
@@ -110,7 +101,7 @@ namespace eShopWCFService
             }
             else
             {
-                var maxId = ents.CatalogItemsStocks.Max(i => i.StockId);
+                var maxId = ents.CatalogItemsStocks.Any() ? ents.CatalogItemsStocks.Max(i => i.StockId) : 0;
                 catalogItemsStock.StockId = ++maxId;
                 ents.CatalogItemsStocks.Add(catalogItemsStock);
                 ents.SaveChanges();

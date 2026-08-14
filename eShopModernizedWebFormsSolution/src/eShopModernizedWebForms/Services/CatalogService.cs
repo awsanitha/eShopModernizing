@@ -1,7 +1,7 @@
 ﻿using eShopModernizedWebForms.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using eShopModernizedWebForms.ViewModel;
 
 namespace eShopModernizedWebForms.Services

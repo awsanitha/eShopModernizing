@@ -79,7 +79,7 @@
 
             <dd class="esh-button-actions">
                 
-                @Html.ActionLink("[ Back to List ]", "Index", null, new { @class = "btn esh-button esh-button-secondary" })
+                @Html.ActionLink("[ Back to List ]", "Index", routeValues: null, htmlAttributes: new { @class = "btn esh-button esh-button-secondary" })
                 @Html.ActionLink("[ Edit ]", "Edit", new { id = Model.Id }, new { @class = "btn esh-button esh-button-primary" })
                 
             </dd>

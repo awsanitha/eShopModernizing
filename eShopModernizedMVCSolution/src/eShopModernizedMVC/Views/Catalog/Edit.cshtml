@@ -113,7 +113,7 @@
 
                 <div class="form-group">
                     <div class="col-md-12 text-right esh-button-actions">
-                        @Html.ActionLink("[ Cancel ]", "Index", null, new { @class = "btn esh-button esh-button-secondary" })
+                        @Html.ActionLink("[ Cancel ]", "Index", routeValues: null, htmlAttributes: new { @class = "btn esh-button esh-button-secondary" })
                         <button type="submit" class="btn esh-button esh-button-primary">[ Save ]</button>
                     </div>
                 </div>
@@ -123,5 +123,6 @@
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 }

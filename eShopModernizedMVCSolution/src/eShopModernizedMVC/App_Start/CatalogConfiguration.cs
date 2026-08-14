@@ -1,9 +1,15 @@
-﻿using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopModernizedMVC
 {
     public class CatalogConfiguration
     {
+        private static IConfiguration _configuration;
+
+        public static void Initialize(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public static bool UseMockData
         {
@@ -41,7 +47,7 @@ namespace eShopModernizedMVC
         {
             get
             {
-                return ConfigurationManager.AppSettings["StorageConnectionString"];
+                return _configuration["StorageConnectionString"];
             }
         }
 
@@ -49,7 +55,7 @@ namespace eShopModernizedMVC
         {
             get
             {
-                return ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+                return _configuration["AppInsightsInstrumentationKey"];
             }
         }
 
@@ -65,7 +71,7 @@ namespace eShopModernizedMVC
         {
             get
             {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryClientId"];
+                return _configuration["AzureActiveDirectoryClientId"];
             }
         }
 
@@ -73,7 +79,15 @@ namespace eShopModernizedMVC
         {
             get
             {
-                return ConfigurationManager.AppSettings["AzureActiveDirectoryTenant"];
+                return _configuration["AzureActiveDirectoryTenant"];
+            }
+        }
+
+        public static string AzureActiveDirectoryInstance
+        {
+            get
+            {
+                return _configuration["AzureActiveDirectoryInstance"];
             }
         }
 
@@ -81,13 +95,13 @@ namespace eShopModernizedMVC
         {
             get
             {
-                return ConfigurationManager.AppSettings["PostLogoutRedirectUri"];
+                return _configuration["PostLogoutRedirectUri"];
             }
         }
 
         private static bool IsEnabled(string configurationKey)
         {
-            return bool.Parse(ConfigurationManager.AppSettings[configurationKey]);
+            return bool.Parse(_configuration[configurationKey] ?? "false");
         }
     }
 }

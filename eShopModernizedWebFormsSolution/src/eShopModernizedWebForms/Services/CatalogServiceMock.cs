@@ -18,7 +18,7 @@ namespace eShopModernizedWebForms.Services
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
         {
             var items = ComposeCatalogItems(catalogItems);
-            
+
             var itemsOnPage = items
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
@@ -77,7 +77,6 @@ namespace eShopModernizedWebForms.Services
             items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
 
             return items;
-            ;
         }
     }
 }
