@@ -25,7 +25,7 @@ namespace eShopWCFService
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
+            return catalogItems.FirstOrDefault(x => x.Id == id)!;
         }
 
         public List<CatalogItem> GetCatalogItems(int brandIdFilter, int typeIdFilter)
@@ -94,12 +94,12 @@ namespace eShopWCFService
 
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
-            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date)).AvailableStock;
+            return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date))!.AvailableStock;
         }
 
         public void CreateAvailableStock(CatalogItemsStock cat)
         {
-            CatalogItemsStock s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
+            CatalogItemsStock? s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == cat.Date.Date).FirstOrDefault();
 
             /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
