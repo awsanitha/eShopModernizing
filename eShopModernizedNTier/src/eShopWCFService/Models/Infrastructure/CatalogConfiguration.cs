@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
 
 namespace eShopWCFService.Models.Infrastructure
 {
@@ -9,12 +6,27 @@ namespace eShopWCFService.Models.Infrastructure
     {
         private static readonly string configConnectionName = "EntityModel";
 
-        public static string ConnectionString
+        /// <summary>
+        /// Returns the connection string from environment variable, or the config key name
+        /// so it can be resolved from appsettings.json via IConfiguration.
+        /// </summary>
+        public static string ConnectionStringKey
         {
             get
             {
-                var envConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
-                return envConnectionString ?? $"name={configConnectionName}";
+                return configConnectionName;
+            }
+        }
+
+        /// <summary>
+        /// Returns a direct connection string if provided via environment variable,
+        /// otherwise null (in which case the app should use IConfiguration).
+        /// </summary>
+        public static string? EnvironmentConnectionString
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("ConnectionString");
             }
         }
     }
