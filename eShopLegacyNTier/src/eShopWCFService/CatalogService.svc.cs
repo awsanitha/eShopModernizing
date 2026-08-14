@@ -1,24 +1,16 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
+using CoreWCF;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "CatalogService" in both code and config file together.
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
-
-        public CatalogService()
-        {
-            ents = new EntityModel();
-        }
 
         public CatalogService(EntityModel ents)
         {
@@ -43,6 +35,7 @@ namespace eShopWCFService
             else
                 return null;
         }
+
         public List<CatalogType> GetCatalogTypes()
         {
             return ents.CatalogTypes.ToList();
