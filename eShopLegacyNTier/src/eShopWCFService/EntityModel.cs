@@ -1,7 +1,5 @@
-using System;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 
@@ -10,18 +8,29 @@ namespace eShopWCFService
     public partial class EntityModel : DbContext
     {
         public EntityModel()
-            : base(CatalogConfiguration.ConnectionString)
         {
-            Database.SetInitializer(new CatalogDBInitializer());
         }
 
-        public virtual DbSet<CatalogBrand> CatalogBrands { get; set; }
-        public virtual DbSet<CatalogItem> CatalogItems { get; set; }
-        public virtual DbSet<CatalogItemsStock> CatalogItemsStocks { get; set; }
-        public virtual DbSet<CatalogType> CatalogTypes { get; set; }
-        public virtual DbSet<DiscountItem> DiscountItems { get; set; }
+        public EntityModel(DbContextOptions<EntityModel> options)
+            : base(options)
+        {
+        }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        public virtual DbSet<CatalogBrand> CatalogBrands { get; set; } = null!;
+        public virtual DbSet<CatalogItem> CatalogItems { get; set; } = null!;
+        public virtual DbSet<CatalogItemsStock> CatalogItemsStocks { get; set; } = null!;
+        public virtual DbSet<CatalogType> CatalogTypes { get; set; } = null!;
+        public virtual DbSet<DiscountItem> DiscountItems { get; set; } = null!;
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(CatalogConfiguration.ConnectionString);
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CatalogBrand>()
                 .Property(e => e.Brand)
@@ -31,13 +40,19 @@ namespace eShopWCFService
                 .Property(e => e.Price)
                 .HasPrecision(19, 4);
 
-            modelBuilder.Entity<CatalogItemsStock>();
+            modelBuilder.Entity<CatalogItemsStock>(entity =>
+            {
+                entity.HasKey(e => e.StockId);
+            });
 
             modelBuilder.Entity<CatalogType>()
                 .Property(e => e.Type)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<DiscountItem>();
+            modelBuilder.Entity<DiscountItem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
         }
     }
 }
