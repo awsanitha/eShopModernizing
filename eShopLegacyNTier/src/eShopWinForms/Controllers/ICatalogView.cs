@@ -1,9 +1,6 @@
-﻿using eShopWinForms.eShopServiceReference;
+using eShopWinForms.eShopServiceReference;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWinForms.Controllers
 {
@@ -42,7 +39,6 @@ namespace eShopWinForms.Controllers
             itemId = id;
             itemStock = stock;
             shipDate = ship;
-
         }
     }
 
@@ -59,14 +55,14 @@ namespace eShopWinForms.Controllers
         {
             itemId = id;
             date = thisDate;
-
         }
     }
+
     public interface ICatalogView
     {
-        event ViewHandler<ICatalogView> filterChanged;
-        event AvailabilityHandler<ICatalogView> availabilityButtonClicked;
-        event SearchStockHandler<ICatalogView> searchStockButtonClicked;
+        event ViewHandler<ICatalogView>? filterChanged;
+        event AvailabilityHandler<ICatalogView>? availabilityButtonClicked;
+        event SearchStockHandler<ICatalogView>? searchStockButtonClicked;
 
         /*All of the methods we want our view to be able to do are defined below*/
         void SetController(CatalogController controller);
