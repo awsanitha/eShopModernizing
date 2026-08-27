@@ -1,7 +1,7 @@
 # eShopLegacyNTier Migration Summary
 ## .NET Framework 4.6.1 / 4.7 → .NET 10
 
-**Build status:** ✅ `dotnet build eShopLegacyNTier.sln` — **0 errors, 0 warnings**
+**Build status:** ✅ `dotnet build eShopLegacyNTier.sln` — **0 errors, 0 warnings** (verified clean)
 
 ---
 
@@ -134,4 +134,4 @@ WinForms desktop application connecting to the WCF service via a generated clien
 
 4. **UWP helper files** — `Helpers/Json.cs`, `Helpers/SettingsStorageExtensions.cs`, etc. are excluded from compilation because they depend on UWP APIs (`Windows.Storage`, `Windows.UI.*`) and were not compiled in the original project. If any of this functionality is needed in the future, it should be reimplemented using the .NET 10 equivalents (`System.Text.Json`, `Microsoft.Extensions.Configuration`, etc.).
 
-5. **WinForms CA1416 warnings** — Currently suppressed by `<Nullable>enable</Nullable>` and build not emitting them as errors; they are expected for Windows-only WinForms code compiled without a `[SupportedOSPlatform]` context attribute. Adding `<SupportedOSPlatform>windows6.1</SupportedOSPlatform>` to the project or annotating the `Main` method would silence these analytically.
+5. **WinForms platform annotations** — No CA1416 warnings are currently emitted. If they appear in future, adding `[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows6.1")]` to AssemblyInfo.cs would silence them analytically.

@@ -84,7 +84,7 @@ namespace eShopWinForms
          */
         public void SetTypeFilter(Dictionary<int, string> typeFilters)
         {
-            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, (string?)null);
+            catalogTypeComboBox.DataSource = new BindingSource(typeFilters, string.Empty);
             catalogTypeComboBox.DisplayMember = "Value";
             catalogTypeComboBox.ValueMember = "Key";
         }
@@ -94,7 +94,7 @@ namespace eShopWinForms
          */
         public void SetBrandFilter(Dictionary<int, string> brandFilter)
         {
-            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, (string?)null);
+            catalogBrandComboBox.DataSource = new BindingSource(brandFilter, string.Empty);
             catalogBrandComboBox.DisplayMember = "Value";
             catalogBrandComboBox.ValueMember = "Key";
         }
