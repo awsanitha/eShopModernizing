@@ -1,32 +1,5 @@
-﻿using Autofac;
-using eShopPorted.Models;
-using eShopPorted.Models.Infrastructure;
-using eShopPorted.Services;
-
+// ApplicationModule.cs is no longer needed.
+// Dependency injection is now configured in Program.cs using built-in ASP.NET Core DI.
 namespace eShopPorted.Modules
 {
-    public class ApplicationModule : Module
-    {
-        private bool _useMockData;
-
-        public ApplicationModule(bool useMockData)
-        {
-            _useMockData = useMockData;
-        }
-        protected override void Load(ContainerBuilder builder)
-        {
-            if (_useMockData)
-            {
-                builder.RegisterType<CatalogServiceMock>()
-                    .As<ICatalogService>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<CatalogService>()
-                    .As<ICatalogService>()
-                    .InstancePerLifetimeScope();
-            }
-        }
-    }
 }

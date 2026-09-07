@@ -1,13 +1,5 @@
-﻿using System.Web;
-using System.Web.Mvc;
-
+// FilterConfig has been migrated to Program.cs.
+// Global error handling uses ASP.NET Core exception middleware.
 namespace eShopLegacyMVC
 {
-    public class FilterConfig
-    {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-        {
-            filters.Add(new HandleErrorAttribute());
-        }
-    }
 }
