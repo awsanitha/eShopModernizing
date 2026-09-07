@@ -32,7 +32,7 @@ namespace eShopLegacyMVC.Services
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
+            return catalogItems.FirstOrDefault(x => x.Id == id)!;
         }
 
         public IEnumerable<CatalogType> GetCatalogTypes()

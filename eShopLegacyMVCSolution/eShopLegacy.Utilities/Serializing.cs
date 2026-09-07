@@ -1,24 +1,26 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Text.Json;
 
 namespace eShopLegacy.Utilities
 {
+    /// <summary>
+    /// Serialization utilities.
+    /// BinaryFormatter has been replaced with System.Text.Json for .NET 5+ compatibility.
+    /// </summary>
     public class Serializing
     {
         public Stream SerializeBinary(object input)
         {
             var stream = new MemoryStream();
-            var binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Serialize(stream, input);
+            JsonSerializer.Serialize(stream, input);
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
         }
 
-        public object DeserializeBinary(Stream stream)
+        public object? DeserializeBinary(Stream stream)
         {
-            var binaryFormatter = new BinaryFormatter();
             stream.Seek(0, SeekOrigin.Begin);
-            return binaryFormatter.Deserialize(stream);
+            return JsonSerializer.Deserialize<object>(stream);
         }
     }
 }
