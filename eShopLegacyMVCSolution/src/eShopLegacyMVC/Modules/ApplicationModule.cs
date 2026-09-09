@@ -1,41 +1,21 @@
-﻿using Autofac;
 using eShopLegacyMVC.Models;
 using eShopLegacyMVC.Models.Infrastructure;
 using eShopLegacyMVC.Services;
 
 namespace eShopLegacyMVC.Modules
 {
-    public class ApplicationModule : Module
+    /// <summary>
+    /// Application module that defines service registrations.
+    /// This is retained as a configuration class for documentation purposes.
+    /// Actual DI registration is done in Program.cs using Microsoft.Extensions.DependencyInjection.
+    /// </summary>
+    public static class ApplicationModule
     {
-        private bool useMockData;
-
-        public ApplicationModule(bool useMockData)
-        {
-            this.useMockData = useMockData;
-        }
-        protected override void Load(ContainerBuilder builder)
-        {
-            if (this.useMockData)
-            {
-                builder.RegisterType<CatalogServiceMock>()
-                    .As<ICatalogService>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<CatalogService>()
-                    .As<ICatalogService>()
-                    .InstancePerLifetimeScope();
-            }
-
-            builder.RegisterType<CatalogDBContext>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogDBInitializer>()
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<CatalogItemHiLoGenerator>()
-                .SingleInstance();
-        }
+        // Service registrations are handled directly in Program.cs:
+        // - ICatalogService -> CatalogServiceMock (singleton, when UseMockData = true)
+        // - ICatalogService -> CatalogService (scoped, when UseMockData = false)
+        // - CatalogDBContext (scoped, via AddDbContext)
+        // - CatalogDBInitializer (scoped)
+        // - CatalogItemHiLoGenerator (singleton)
     }
 }

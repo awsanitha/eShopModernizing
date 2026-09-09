@@ -1,32 +1,14 @@
-﻿using Autofac;
-using eShopPorted.Models;
-using eShopPorted.Models.Infrastructure;
-using eShopPorted.Services;
-
 namespace eShopPorted.Modules
 {
-    public class ApplicationModule : Module
+    /// <summary>
+    /// Application module - kept as a namespace placeholder.
+    /// Service registrations are now handled directly in Program.cs
+    /// using Microsoft.Extensions.DependencyInjection.
+    /// </summary>
+    public static class ApplicationModule
     {
-        private bool _useMockData;
-
-        public ApplicationModule(bool useMockData)
-        {
-            _useMockData = useMockData;
-        }
-        protected override void Load(ContainerBuilder builder)
-        {
-            if (_useMockData)
-            {
-                builder.RegisterType<CatalogServiceMock>()
-                    .As<ICatalogService>()
-                    .SingleInstance();
-            }
-            else
-            {
-                builder.RegisterType<CatalogService>()
-                    .As<ICatalogService>()
-                    .InstancePerLifetimeScope();
-            }
-        }
+        // ICatalogService is registered in Program.cs:
+        // - CatalogServiceMock (singleton) when UseMockData = true
+        // - CatalogService (scoped) when UseMockData = false
     }
 }
