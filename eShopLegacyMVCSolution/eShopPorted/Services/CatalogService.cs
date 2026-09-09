@@ -31,7 +31,7 @@ namespace eShopPorted.Services
                 pageIndex, pageSize, totalItems, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
             return db.CatalogItems
                 .Include(c => c.CatalogBrand)

@@ -30,7 +30,7 @@ namespace eShopPorted.Services
                 pageIndex, pageSize, items.Count, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
             return catalogItems.FirstOrDefault(x => x.Id == id);
         }
