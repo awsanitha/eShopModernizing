@@ -1,13 +1,9 @@
-﻿using System.Web;
-using System.Web.Mvc;
-
+// FilterConfig is not used in ASP.NET Core.
+// Global filters are configured via builder.Services.AddControllersWithViews(options => ...) in Program.cs.
+// This file is retained for reference only.
 namespace eShopLegacyMVC
 {
-    public class FilterConfig
+    internal static class FilterConfig
     {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-        {
-            filters.Add(new HandleErrorAttribute());
-        }
     }
 }

@@ -1,20 +1,9 @@
-﻿using System.Web.Mvc;
-using System.Web.Routing;
-
+// RouteConfig is not used in ASP.NET Core.
+// Routes are configured in Program.cs using app.MapControllerRoute().
+// This file is retained for reference only.
 namespace eShopLegacyMVC
 {
-    public class RouteConfig
+    internal static class RouteConfig
     {
-        public static void RegisterRoutes(RouteCollection routes)
-        {
-            routes.MapMvcAttributeRoutes();
-            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Catalog", action = "Index", id = UrlParameter.Optional }
-            );
-        }
     }
 }
