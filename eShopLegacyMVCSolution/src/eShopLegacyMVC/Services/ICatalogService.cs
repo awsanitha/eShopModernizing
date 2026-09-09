@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using eShopLegacyMVC.Models;
 using System;
+using System.Collections.Generic;
+using eShopLegacyMVC.Models;
 using eShopLegacyMVC.ViewModel;
 
 namespace eShopLegacyMVC.Services
