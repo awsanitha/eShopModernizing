@@ -1,8 +1,8 @@
 ﻿using eShopLegacyMVC.Services;
 using log4net;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using System.Net;
-using System.Web.Mvc;
 
 namespace eShopLegacyMVC.Controllers
 {
@@ -13,13 +13,15 @@ namespace eShopLegacyMVC.Controllers
         public const string GetPicRouteName = "GetPicRouteTemplate";
 
         private ICatalogService service;
+        private IWebHostEnvironment _env;
 
-        public PicController(ICatalogService service)
+        public PicController(ICatalogService service, IWebHostEnvironment env)
         {
             this.service = service;
+            _env = env;
         }
 
-        // GET: Pic/5.png
+        // GET: items/5/pic
         [HttpGet]
         [Route("items/{catalogItemId:int}/pic", Name = GetPicRouteName)]
         public ActionResult Index(int catalogItemId)
@@ -28,15 +30,16 @@ namespace eShopLegacyMVC.Controllers
 
             if (catalogItemId <= 0)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             var item = service.FindCatalogItem(catalogItemId);
 
             if (item != null)
             {
-                var webRoot = Server.MapPath("~/Pics");
-                var path = Path.Combine(webRoot, item.PictureFileName);
+                // Pics are stored in the content root (project root) under Pics/
+                var picsPath = Path.Combine(_env.ContentRootPath, "Pics");
+                var path = Path.Combine(picsPath, item.PictureFileName);
 
                 string imageFileExtension = Path.GetExtension(item.PictureFileName);
                 string mimetype = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
@@ -46,46 +49,33 @@ namespace eShopLegacyMVC.Controllers
                 return File(buffer, mimetype);
             }
 
-            return HttpNotFound();
+            return NotFound();
         }
 
         private string GetImageMimeTypeFromImageFileExtension(string extension)
         {
-            string mimetype;
-
             switch (extension)
             {
                 case ".png":
-                    mimetype = "image/png";
-                    break;
+                    return "image/png";
                 case ".gif":
-                    mimetype = "image/gif";
-                    break;
+                    return "image/gif";
                 case ".jpg":
                 case ".jpeg":
-                    mimetype = "image/jpeg";
-                    break;
+                    return "image/jpeg";
                 case ".bmp":
-                    mimetype = "image/bmp";
-                    break;
+                    return "image/bmp";
                 case ".tiff":
-                    mimetype = "image/tiff";
-                    break;
+                    return "image/tiff";
                 case ".wmf":
-                    mimetype = "image/wmf";
-                    break;
+                    return "image/wmf";
                 case ".jp2":
-                    mimetype = "image/jp2";
-                    break;
+                    return "image/jp2";
                 case ".svg":
-                    mimetype = "image/svg+xml";
-                    break;
+                    return "image/svg+xml";
                 default:
-                    mimetype = "application/octet-stream";
-                    break;
+                    return "application/octet-stream";
             }
-
-            return mimetype;
         }
     }
 }

@@ -1,19 +1,9 @@
-﻿using System.Web.Http;
-
+﻿// WebApiConfig is no longer used.
+// Web API routes are configured in Program.cs via app.MapControllers().
 namespace eShopLegacyMVC
 {
     public class WebApiConfig
     {
-        public static void Register(HttpConfiguration config)
-        {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-        }
+        // Intentionally empty - API routing configured in Program.cs via MapControllers().
     }
 }
