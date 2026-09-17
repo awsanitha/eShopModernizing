@@ -1,5 +1,5 @@
 using System;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using eShopWCFService.Models;
@@ -10,9 +10,12 @@ namespace eShopWCFService
     public partial class EntityModel : DbContext
     {
         public EntityModel()
-            : base(CatalogConfiguration.ConnectionString)
         {
-            Database.SetInitializer(new CatalogDBInitializer());
+        }
+
+        public EntityModel(DbContextOptions<EntityModel> options)
+            : base(options)
+        {
         }
 
         public virtual DbSet<CatalogBrand> CatalogBrands { get; set; }
@@ -21,7 +24,7 @@ namespace eShopWCFService
         public virtual DbSet<CatalogType> CatalogTypes { get; set; }
         public virtual DbSet<DiscountItem> DiscountItems { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CatalogBrand>()
                 .Property(e => e.Brand)
@@ -38,6 +41,13 @@ namespace eShopWCFService
                 .IsUnicode(false);
 
             modelBuilder.Entity<DiscountItem>();
+
+            // Seed data (replaces EF6 CatalogDBInitializer)
+            modelBuilder.Entity<CatalogType>().HasData(PreconfiguredData.GetPreconfiguredCatalogTypes());
+            modelBuilder.Entity<CatalogBrand>().HasData(PreconfiguredData.GetPreconfiguredCatalogBrands());
+            modelBuilder.Entity<CatalogItem>().HasData(PreconfiguredData.GetPreconfiguredCatalogItems());
+            modelBuilder.Entity<CatalogItemsStock>().HasData(PreconfiguredData.GetPreconfiguredCatalogItemsStock());
+            modelBuilder.Entity<DiscountItem>().HasData(PreconfiguredData.GetPreconfiguredDiscountItems());
         }
     }
 }
