@@ -612,11 +612,6 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxDescription;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxPrice;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxBrand;
         private System.Windows.Forms.Button searchAvailabilityButton;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.GroupBox groupBox1;
