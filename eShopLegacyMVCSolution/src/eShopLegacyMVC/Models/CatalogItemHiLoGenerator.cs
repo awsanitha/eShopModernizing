@@ -1,8 +1,6 @@
-﻿using eShopLegacyMVC.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace eShopLegacyMVC.Models
 {
@@ -11,7 +9,7 @@ namespace eShopLegacyMVC.Models
         private const int HiLoIncrement = 10;
         private int sequenceId = -1;
         private int remainningLoIds = 0;
-        private object sequenceLock = new object();
+        private readonly object sequenceLock = new object();
 
         public int GetNextSequenceValue(CatalogDBContext db)
         {
@@ -19,8 +17,7 @@ namespace eShopLegacyMVC.Models
             {
                 if (remainningLoIds == 0)
                 {
-                    var rawQuery = db.Database.SqlQuery<Int64>("SELECT NEXT VALUE FOR catalog_hilo;");
-                    sequenceId = (int)rawQuery.Single();
+                    sequenceId = (int)ExecuteSequenceQuery(db, "catalog_hilo");
                     remainningLoIds = HiLoIncrement - 1;
                     return sequenceId;
                 }
@@ -29,6 +26,23 @@ namespace eShopLegacyMVC.Models
                     remainningLoIds--;
                     return ++sequenceId;
                 }
+            }
+        }
+
+        private static long ExecuteSequenceQuery(CatalogDBContext db, string sequenceName)
+        {
+            var connection = db.Database.GetDbConnection();
+            var wasOpen = connection.State == ConnectionState.Open;
+            if (!wasOpen) connection.Open();
+            try
+            {
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = $"SELECT NEXT VALUE FOR {sequenceName};";
+                return (long)cmd.ExecuteScalar()!;
+            }
+            finally
+            {
+                if (!wasOpen) connection.Close();
             }
         }
     }

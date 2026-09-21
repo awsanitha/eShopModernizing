@@ -1,13 +1,5 @@
-﻿using System.Web;
-using System.Web.Mvc;
-
+// FilterConfig is no longer used. Error handling is configured in Program.cs.
 namespace eShopLegacyMVC
 {
-    public class FilterConfig
-    {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-        {
-            filters.Add(new HandleErrorAttribute());
-        }
-    }
+    public class FilterConfig { }
 }
