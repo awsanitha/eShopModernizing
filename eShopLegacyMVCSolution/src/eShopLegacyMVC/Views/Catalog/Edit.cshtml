@@ -1,11 +1,10 @@
-﻿@model eShopLegacyMVC.Models.CatalogItem
+@model eShopLegacyMVC.Models.CatalogItem
 
 @{
     ViewBag.Title = "Edit";
 }
 
 <h2 class="esh-body-title">Edit</h2>
-
 
 @using (Html.BeginForm())
 {
@@ -101,5 +100,6 @@
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 }

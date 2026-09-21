@@ -1,86 +1,62 @@
-﻿using eShopLegacyMVC.Models.Infrastructure;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopLegacyMVC.Models
 {
     public class CatalogDBContext : DbContext
     {
-        public CatalogDBContext() : base("name=CatalogDBContext")
+        public CatalogDBContext(DbContextOptions<CatalogDBContext> options) : base(options)
         {
         }
 
-        public DbSet<CatalogItem> CatalogItems { get; set; }
+        public DbSet<CatalogItem> CatalogItems { get; set; } = null!;
+        public DbSet<CatalogBrand> CatalogBrands { get; set; } = null!;
+        public DbSet<CatalogType> CatalogTypes { get; set; } = null!;
 
-        public DbSet<CatalogBrand> CatalogBrands { get; set; }
-
-        public DbSet<CatalogType> CatalogTypes { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            ConfigureCatalogType(builder.Entity<CatalogType>());
-            ConfigureCatalogBrand(builder.Entity<CatalogBrand>());
-            ConfigureCatalogItem(builder.Entity<CatalogItem>());
-
-            base.OnModelCreating(builder);
+            ConfigureCatalogType(modelBuilder);
+            ConfigureCatalogBrand(modelBuilder);
+            ConfigureCatalogItem(modelBuilder);
         }
 
-        void ConfigureCatalogType(EntityTypeConfiguration<CatalogType> builder)
+        private void ConfigureCatalogType(ModelBuilder builder)
         {
-            builder.ToTable("CatalogType");
-
-            builder.HasKey(ci => ci.Id);
-
-            builder.Property(ci => ci.Id)
-               .IsRequired();
-
-            builder.Property(cb => cb.Type)
+            builder.Entity<CatalogType>().ToTable("CatalogType");
+            builder.Entity<CatalogType>().HasKey(ct => ct.Id);
+            builder.Entity<CatalogType>().Property(ct => ct.Type)
                 .IsRequired()
                 .HasMaxLength(100);
         }
 
-        void ConfigureCatalogBrand(EntityTypeConfiguration<CatalogBrand> builder)
+        private void ConfigureCatalogBrand(ModelBuilder builder)
         {
-            builder.ToTable("CatalogBrand");
-
-            builder.HasKey(ci => ci.Id);
-
-            builder.Property(ci => ci.Id)
-               .IsRequired();
-
-            builder.Property(cb => cb.Brand)
+            builder.Entity<CatalogBrand>().ToTable("CatalogBrand");
+            builder.Entity<CatalogBrand>().HasKey(cb => cb.Id);
+            builder.Entity<CatalogBrand>().Property(cb => cb.Brand)
                 .IsRequired()
                 .HasMaxLength(100);
         }
 
-        void ConfigureCatalogItem(EntityTypeConfiguration<CatalogItem> builder)
+        private void ConfigureCatalogItem(ModelBuilder builder)
         {
-            builder.ToTable("Catalog");
-
-            builder.HasKey(ci => ci.Id);
-
-            builder.Property(ci => ci.Id)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None)
-                .IsRequired();
-
-            builder.Property(ci => ci.Name)
+            builder.Entity<CatalogItem>().ToTable("Catalog");
+            builder.Entity<CatalogItem>().HasKey(ci => ci.Id);
+            builder.Entity<CatalogItem>().Property(ci => ci.Id)
+                .ValueGeneratedNever();
+            builder.Entity<CatalogItem>().Property(ci => ci.Name)
                 .IsRequired()
                 .HasMaxLength(50);
-
-            builder.Property(ci => ci.Price)
+            builder.Entity<CatalogItem>().Property(ci => ci.Price)
                 .IsRequired();
-
-            builder.Property(ci => ci.PictureFileName)
+            builder.Entity<CatalogItem>().Property(ci => ci.PictureFileName)
                 .IsRequired();
-
-            builder.Ignore(ci => ci.PictureUri);
-
-            builder.HasRequired<CatalogBrand>(ci => ci.CatalogBrand)
+            builder.Entity<CatalogItem>().Ignore(ci => ci.PictureUri);
+            builder.Entity<CatalogItem>()
+                .HasOne(ci => ci.CatalogBrand)
                 .WithMany()
                 .HasForeignKey(ci => ci.CatalogBrandId);
-
-            builder.HasRequired<CatalogType>(ci => ci.CatalogType)
+            builder.Entity<CatalogItem>()
+                .HasOne(ci => ci.CatalogType)
                 .WithMany()
                 .HasForeignKey(ci => ci.CatalogTypeId);
         }

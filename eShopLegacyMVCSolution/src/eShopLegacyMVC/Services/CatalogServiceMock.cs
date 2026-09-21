@@ -1,43 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using eShopLegacyMVC.Models;
 using eShopLegacyMVC.Models.Infrastructure;
 using eShopLegacyMVC.ViewModel;
+using log4net;
+using System.Reflection;
 
 namespace eShopLegacyMVC.Services
 {
     public class CatalogServiceMock : ICatalogService
     {
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod()!.DeclaringType);
+
         private List<CatalogItem> catalogItems;
 
         public CatalogServiceMock()
         {
-            catalogItems = new List<CatalogItem>(PreconfiguredData.GetPreconfiguredCatalogItems());
+            catalogItems = PreconfiguredData.GetPreconfiguredCatalogItems();
         }
 
-        public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize = 10, int pageIndex = 0)
+        public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize, int pageIndex)
         {
-            var items = ComposeCatalogItems(catalogItems);
-            
-            var itemsOnPage = items
+            _log.Debug($"GetCatalogItemsPaginated called pageSize={pageSize} pageIndex={pageIndex}");
+
+            var totalItems = catalogItems.LongCount();
+            var itemsOnPage = ComposeCatalogItems(catalogItems)
                 .OrderBy(c => c.Id)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToList();
 
-            return new PaginatedItemsViewModel<CatalogItem>(
-                pageIndex, pageSize, items.Count, itemsOnPage);
+            return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
         }
 
-        public CatalogItem FindCatalogItem(int id)
+        public CatalogItem? FindCatalogItem(int id)
         {
-            return catalogItems.FirstOrDefault(x => x.Id == id);
-        }
-
-        public IEnumerable<CatalogType> GetCatalogTypes()
-        {
-            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+            var item = catalogItems.FirstOrDefault(x => x.Id == id);
+            if (item == null) return null;
+            return ComposeCatalogItems(new List<CatalogItem> { item }).First();
         }
 
         public IEnumerable<CatalogBrand> GetCatalogBrands()
@@ -45,20 +43,23 @@ namespace eShopLegacyMVC.Services
             return PreconfiguredData.GetPreconfiguredCatalogBrands();
         }
 
+        public IEnumerable<CatalogType> GetCatalogTypes()
+        {
+            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+        }
+
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
-            var maxId = catalogItems.Max(i => i.Id);
-            catalogItem.Id = ++maxId;
+            var id = catalogItems.Any() ? catalogItems.Max(i => i.Id) + 1 : 1;
+            catalogItem.Id = id;
             catalogItems.Add(catalogItem);
         }
 
-        public void UpdateCatalogItem(CatalogItem modifiedItem)
+        public void UpdateCatalogItem(CatalogItem catalogItem)
         {
-            var originalItem = FindCatalogItem(modifiedItem.Id);
-            if (originalItem != null)
-            {
-                catalogItems[catalogItems.IndexOf(originalItem)] = modifiedItem;
-            }
+            var index = catalogItems.FindIndex(i => i.Id == catalogItem.Id);
+            if (index >= 0)
+                catalogItems[index] = catalogItem;
         }
 
         public void RemoveCatalogItem(CatalogItem catalogItem)
@@ -70,15 +71,17 @@ namespace eShopLegacyMVC.Services
         {
         }
 
-        private List<CatalogItem> ComposeCatalogItems(List<CatalogItem> items)
+        private IEnumerable<CatalogItem> ComposeCatalogItems(IEnumerable<CatalogItem> items)
         {
-            var catalogTypes = PreconfiguredData.GetPreconfiguredCatalogTypes();
-            var catalogBrands = PreconfiguredData.GetPreconfiguredCatalogBrands();
-            items.ForEach(i => i.CatalogBrand = catalogBrands.First(b => b.Id == i.CatalogBrandId));
-            items.ForEach(i => i.CatalogType = catalogTypes.First(b => b.Id == i.CatalogTypeId));
+            var brands = PreconfiguredData.GetPreconfiguredCatalogBrands().ToList();
+            var types = PreconfiguredData.GetPreconfiguredCatalogTypes().ToList();
 
-            return items;
-            ;
+            foreach (var item in items)
+            {
+                item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId);
+                item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId);
+                yield return item;
+            }
         }
     }
 }
