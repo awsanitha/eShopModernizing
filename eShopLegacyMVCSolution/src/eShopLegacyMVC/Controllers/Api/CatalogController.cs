@@ -1,4 +1,4 @@
-﻿using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace eShopLegacyMVC.Controllers.Api
 {
@@ -8,7 +8,7 @@ namespace eShopLegacyMVC.Controllers.Api
         [HttpGet]
         public ActionResult Index()
         {
-            return Json(new { Message = "Hello World!" });
+            return Ok(new { Message = "Hello World!" });
         }
     }
 }

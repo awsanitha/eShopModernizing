@@ -1,8 +1,8 @@
-﻿using eShopLegacyMVC.Services;
+using eShopLegacyMVC.Services;
 using log4net;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using System.Net;
-using System.Web.Mvc;
 
 namespace eShopLegacyMVC.Controllers
 {
@@ -12,11 +12,13 @@ namespace eShopLegacyMVC.Controllers
 
         public const string GetPicRouteName = "GetPicRouteTemplate";
 
-        private ICatalogService service;
+        private readonly ICatalogService service;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public PicController(ICatalogService service)
+        public PicController(ICatalogService service, IWebHostEnvironment webHostEnvironment)
         {
             this.service = service;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Pic/5.png
@@ -28,64 +30,62 @@ namespace eShopLegacyMVC.Controllers
 
             if (catalogItemId <= 0)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             var item = service.FindCatalogItem(catalogItemId);
 
             if (item != null)
             {
-                var webRoot = Server.MapPath("~/Pics");
-                var path = Path.Combine(webRoot, item.PictureFileName);
+                var webRoot = webHostEnvironment.WebRootPath
+                              ?? webHostEnvironment.ContentRootPath;
+                var path = Path.Combine(webRoot, "Pics", item.PictureFileName);
+
+                if (!System.IO.File.Exists(path))
+                {
+                    // Fallback: look in content root Pics folder
+                    path = Path.Combine(webHostEnvironment.ContentRootPath, "Pics", item.PictureFileName);
+                }
+
+                if (!System.IO.File.Exists(path))
+                {
+                    return NotFound();
+                }
 
                 string imageFileExtension = Path.GetExtension(item.PictureFileName);
                 string mimetype = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
 
                 var buffer = System.IO.File.ReadAllBytes(path);
-
                 return File(buffer, mimetype);
             }
 
-            return HttpNotFound();
+            return NotFound();
         }
 
         private string GetImageMimeTypeFromImageFileExtension(string extension)
         {
-            string mimetype;
-
             switch (extension)
             {
                 case ".png":
-                    mimetype = "image/png";
-                    break;
+                    return "image/png";
                 case ".gif":
-                    mimetype = "image/gif";
-                    break;
+                    return "image/gif";
                 case ".jpg":
                 case ".jpeg":
-                    mimetype = "image/jpeg";
-                    break;
+                    return "image/jpeg";
                 case ".bmp":
-                    mimetype = "image/bmp";
-                    break;
+                    return "image/bmp";
                 case ".tiff":
-                    mimetype = "image/tiff";
-                    break;
+                    return "image/tiff";
                 case ".wmf":
-                    mimetype = "image/wmf";
-                    break;
+                    return "image/wmf";
                 case ".jp2":
-                    mimetype = "image/jp2";
-                    break;
+                    return "image/jp2";
                 case ".svg":
-                    mimetype = "image/svg+xml";
-                    break;
+                    return "image/svg+xml";
                 default:
-                    mimetype = "application/octet-stream";
-                    break;
+                    return "application/octet-stream";
             }
-
-            return mimetype;
         }
     }
 }
