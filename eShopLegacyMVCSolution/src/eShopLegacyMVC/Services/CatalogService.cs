@@ -1,21 +1,18 @@
-﻿using eShopLegacyMVC.Models;
+﻿using eShopPorted.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using eShopLegacyMVC.ViewModel;
+using eShopPorted.ViewModel;
+using Microsoft.EntityFrameworkCore;
 
-namespace eShopLegacyMVC.Services
+namespace eShopPorted.Services
 {
-
     public class CatalogService : ICatalogService
     {
         private CatalogDBContext db;
-        private CatalogItemHiLoGenerator indexGenerator;
 
-        public CatalogService(CatalogDBContext db, CatalogItemHiLoGenerator indexGenerator)
+        public CatalogService(CatalogDBContext db)            
         {
             this.db = db;
-            this.indexGenerator = indexGenerator;
         }
 
         public PaginatedItemsViewModel<CatalogItem> GetCatalogItemsPaginated(int pageSize, int pageIndex)
@@ -36,7 +33,10 @@ namespace eShopLegacyMVC.Services
 
         public CatalogItem FindCatalogItem(int id)
         {
-            return db.CatalogItems.Include(c => c.CatalogBrand).Include(c => c.CatalogType).FirstOrDefault(ci => ci.Id == id);
+            return db.CatalogItems
+                .Include(c => c.CatalogBrand)
+                .Include(c => c.CatalogType)
+                .FirstOrDefault(ci => ci.Id == id);
         }
         public IEnumerable<CatalogType> GetCatalogTypes()
         {
@@ -50,7 +50,6 @@ namespace eShopLegacyMVC.Services
 
         public void CreateCatalogItem(CatalogItem catalogItem)
         {
-            catalogItem.Id = indexGenerator.GetNextSequenceValue(db);
             db.CatalogItems.Add(catalogItem);
             db.SaveChanges();
         }

@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="eShopLegacyMVC.MvcApplication" Language="C#" %>
+<!-- Replaced by ASP.NET Core hosting. -->
