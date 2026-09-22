@@ -1,24 +1,27 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
-namespace eShopLegacy.Utilities
+namespace eShopLegacy.Utilities;
+
+public class Serializing
 {
-    public class Serializing
-    {
-        public Stream SerializeBinary(object input)
-        {
-            var stream = new MemoryStream();
-            var binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Serialize(stream, input);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
-        }
+    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web);
 
-        public object DeserializeBinary(Stream stream)
-        {
-            var binaryFormatter = new BinaryFormatter();
-            stream.Seek(0, SeekOrigin.Begin);
-            return binaryFormatter.Deserialize(stream);
-        }
+    public Stream SerializeBinary(object input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        var stream = new MemoryStream();
+        JsonSerializer.Serialize(stream, input, input.GetType(), Options);
+        stream.Position = 0;
+        return stream;
+    }
+
+    public object DeserializeBinary(Stream stream)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        stream.Position = 0;
+        using var document = JsonDocument.Parse(stream);
+        return document.RootElement.Clone();
     }
 }

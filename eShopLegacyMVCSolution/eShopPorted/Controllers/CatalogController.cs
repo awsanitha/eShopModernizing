@@ -1,166 +1,142 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using eShopPorted.Models;
 using eShopPorted.Services;
-using log4net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace eShopPorted.Controllers
+namespace eShopPorted.Controllers;
+
+public class CatalogController : Controller
 {
-    public class CatalogController : Controller
+    private readonly ILogger<CatalogController> _logger;
+    private readonly ICatalogService _service;
+
+    public CatalogController(ICatalogService service, ILogger<CatalogController> logger)
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        _service = service;
+        _logger = logger;
+    }
 
-        private ICatalogService service;
+    public IActionResult Index(int pageSize = 10, int pageIndex = 0)
+    {
+        _logger.LogInformation("Loading catalog page {PageIndex} with page size {PageSize}", pageIndex, pageSize);
+        var paginatedItems = _service.GetCatalogItemsPaginated(pageSize, pageIndex);
+        SetPictureUris(paginatedItems.Data);
+        return View(paginatedItems);
+    }
 
-        public CatalogController(ICatalogService service)
+    public IActionResult Details(int? id)
+    {
+        if (id is null)
         {
-            this.service = service;
+            return BadRequest();
         }
 
-        // GET /[?pageSize=3&pageIndex=10]
-        public ActionResult Index(int pageSize = 10, int pageIndex = 0)
+        var catalogItem = _service.FindCatalogItem(id.Value);
+        if (catalogItem is null)
         {
-            _log.Info($"Now loading... /Catalog/Index?pageSize={pageSize}&pageIndex={pageIndex}");
-            var paginatedItems = service.GetCatalogItemsPaginated(pageSize, pageIndex);
-            ChangeUriPlaceholder(paginatedItems.Data);
-            return View(paginatedItems);
+            return NotFound();
         }
 
-        // GET: Catalog/Details/5
-        public ActionResult Details(int? id)
-        {
-            _log.Info($"Now loading... /Catalog/Details?id={id}");
-            if (id == null)
-            {
-                return BadRequest();
-            }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
-            if (catalogItem == null)
-            {
-                return NotFound();
-            }
-            AddUriPlaceHolder(catalogItem);
+        SetPictureUri(catalogItem);
+        return View(catalogItem);
+    }
 
-            return View(catalogItem);
+    public IActionResult Create()
+    {
+        PopulateCatalogLists();
+        return View(new CatalogItem());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder")] CatalogItem catalogItem)
+    {
+        if (ModelState.IsValid)
+        {
+            _service.CreateCatalogItem(catalogItem);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Catalog/Create
-        public ActionResult Create()
+        PopulateCatalogLists(catalogItem);
+        return View(catalogItem);
+    }
+
+    public IActionResult Edit(int? id)
+    {
+        if (id is null)
         {
-            _log.Info($"Now loading... /Catalog/Create");
-            ViewBag.CatalogBrandId = new SelectList(service.GetCatalogBrands(), "Id", "Brand");
-            ViewBag.CatalogTypeId = new SelectList(service.GetCatalogTypes(), "Id", "Type");
-            return View(new CatalogItem());
+            return BadRequest();
         }
 
-        // POST: Catalog/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder")] CatalogItem catalogItem)
-{
-            _log.Info($"Now processing... /Catalog/Create?catalogItemName={catalogItem.Name}");
-            if (ModelState.IsValid)
-            {
-                service.CreateCatalogItem(catalogItem);
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.CatalogBrandId = new SelectList(service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
-            ViewBag.CatalogTypeId = new SelectList(service.GetCatalogTypes(), "Id", "Type", catalogItem.CatalogTypeId);
-            return View(catalogItem);
+        var catalogItem = _service.FindCatalogItem(id.Value);
+        if (catalogItem is null)
+        {
+            return NotFound();
         }
 
-        // GET: Catalog/Edit/5
-        public ActionResult Edit(int? id)
+        SetPictureUri(catalogItem);
+        PopulateCatalogLists(catalogItem);
+        return View(catalogItem);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder")] CatalogItem catalogItem)
+    {
+        if (ModelState.IsValid)
         {
-            _log.Info($"Now loading... /Catalog/Edit?id={id}");
-            if (id == null)
-            {
-                return BadRequest();
-            }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
-            if (catalogItem == null)
-            {
-                return NotFound();
-            }
-            AddUriPlaceHolder(catalogItem);
-            ViewBag.CatalogBrandId = new SelectList(service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
-            ViewBag.CatalogTypeId = new SelectList(service.GetCatalogTypes(), "Id", "Type", catalogItem.CatalogTypeId);
-            return View(catalogItem);
+            _service.UpdateCatalogItem(catalogItem);
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: Catalog/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind("Id,Name,Description,Price,PictureFileName,CatalogTypeId,CatalogBrandId,AvailableStock,RestockThreshold,MaxStockThreshold,OnReorder")] CatalogItem catalogItem)
+        PopulateCatalogLists(catalogItem);
+        return View(catalogItem);
+    }
+
+    public IActionResult Delete(int? id)
+    {
+        if (id is null)
         {
-            _log.Info($"Now processing... /Catalog/Edit?id={catalogItem.Id}");
-            if (ModelState.IsValid)
-            {
-                service.UpdateCatalogItem(catalogItem);
-                return RedirectToAction("Index");
-            }
-            ViewBag.CatalogBrandId = new SelectList(service.GetCatalogBrands(), "Id", "Brand", catalogItem.CatalogBrandId);
-            ViewBag.CatalogTypeId = new SelectList(service.GetCatalogTypes(), "Id", "Type", catalogItem.CatalogTypeId);
-            return View(catalogItem);
+            return BadRequest();
         }
 
-        // GET: Catalog/Delete/5
-        public ActionResult Delete(int? id)
+        var catalogItem = _service.FindCatalogItem(id.Value);
+        if (catalogItem is null)
         {
-            _log.Info($"Now loading... /Catalog/Delete?id={id}");
-            if (id == null)
-            {
-                return BadRequest();
-            }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
-            if (catalogItem == null)
-            {
-                return NotFound();
-            }
-            AddUriPlaceHolder(catalogItem);
-
-            return View(catalogItem);
+            return NotFound();
         }
 
-        // POST: Catalog/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        SetPictureUri(catalogItem);
+        return View(catalogItem);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteConfirmed(int id)
+    {
+        var catalogItem = _service.FindCatalogItem(id);
+        if (catalogItem is null)
         {
-            _log.Info($"Now processing... /Catalog/DeleteConfirmed?id={id}");
-            CatalogItem catalogItem = service.FindCatalogItem(id);
-            service.RemoveCatalogItem(catalogItem);
-            return RedirectToAction("Index");
+            return NotFound();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            _log.Debug($"Now disposing");
-            if (disposing)
-            {
-                service.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        _service.RemoveCatalogItem(catalogItem);
+        return RedirectToAction(nameof(Index));
+    }
 
-        private void ChangeUriPlaceholder(IEnumerable<CatalogItem> items)
-        {
-            foreach (var catalogItem in items)
-            {
-                AddUriPlaceHolder(catalogItem);
-            }
-        }
+    private void PopulateCatalogLists(CatalogItem item = null)
+    {
+        ViewBag.CatalogBrandId = new SelectList(_service.GetCatalogBrands(), "Id", "Brand", item?.CatalogBrandId);
+        ViewBag.CatalogTypeId = new SelectList(_service.GetCatalogTypes(), "Id", "Type", item?.CatalogTypeId);
+    }
 
-        private void AddUriPlaceHolder(CatalogItem item)
+    private static void SetPictureUris(IEnumerable<CatalogItem> items)
+    {
+        foreach (var item in items)
         {
-            item.PictureUri = $"/Pics/{item.Id}.png";
+            SetPictureUri(item);
         }
     }
+
+    private static void SetPictureUri(CatalogItem item) => item.PictureUri = $"/Pics/{item.PictureFileName}";
 }
