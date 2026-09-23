@@ -10,7 +10,7 @@ namespace eShopPorted.Controllers
 {
     public class CatalogController : Controller
     {
-        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(typeof(CatalogController));
 
         private ICatalogService service;
 
@@ -36,7 +36,7 @@ namespace eShopPorted.Controllers
             {
                 return BadRequest();
             }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
+            CatalogItem? catalogItem = service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
                 return NotFound();
@@ -82,7 +82,7 @@ public ActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,Cata
             {
                 return BadRequest();
             }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
+            CatalogItem? catalogItem = service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
                 return NotFound();
@@ -119,7 +119,7 @@ public ActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,Cata
             {
                 return BadRequest();
             }
-            CatalogItem catalogItem = service.FindCatalogItem(id.Value);
+            CatalogItem? catalogItem = service.FindCatalogItem(id.Value);
             if (catalogItem == null)
             {
                 return NotFound();
@@ -135,7 +135,8 @@ public ActionResult Create([Bind("Id,Name,Description,Price,PictureFileName,Cata
         public ActionResult DeleteConfirmed(int id)
         {
             _log.Info($"Now processing... /Catalog/DeleteConfirmed?id={id}");
-            CatalogItem catalogItem = service.FindCatalogItem(id);
+            CatalogItem? catalogItem = service.FindCatalogItem(id);
+            if (catalogItem == null) return NotFound();
             service.RemoveCatalogItem(catalogItem);
             return RedirectToAction("Index");
         }
