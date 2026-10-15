@@ -1,0 +1,126 @@
+@page "{index:int?}/{size:int?}"
+@model eShopLegacyWebForms.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="esh-table">
+    <p class="esh-link-wrapper">
+        <a href="/Catalog/Create" class="btn esh-button esh-button-primary">
+            Create New
+        </a>
+    </p>
+
+    @if (Model.CatalogModel == null || !Model.CatalogModel.Data.Any())
+    {
+        <table>
+            <tr>
+                <td>No data was returned.</td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr class="esh-table-header">
+                    <th></th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Brand</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Picture name</th>
+                    <th>Stock</th>
+                    <th>Restock</th>
+                    <th>Max stock</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.CatalogModel.Data)
+                {
+                    <tr>
+                        <td>
+                            <img class="esh-thumbnail" src="/Pics/@item.PictureFileName" />
+                        </td>
+                        <td>
+                            <p>@item.Name</p>
+                        </td>
+                        <td>
+                            <p>@item.Description</p>
+                        </td>
+                        <td>
+                            <p>@item.CatalogBrand?.Brand</p>
+                        </td>
+                        <td>
+                            <p>@item.CatalogType?.Type</p>
+                        </td>
+                        <td>
+                            <p><span class="esh-price">@item.Price</span></p>
+                        </td>
+                        <td>
+                            <p>@item.PictureFileName</p>
+                        </td>
+                        <td>
+                            <p>@item.AvailableStock</p>
+                        </td>
+                        <td>
+                            <p>@item.RestockThreshold</p>
+                        </td>
+                        <td>
+                            <p>@item.MaxStockThreshold</p>
+                        </td>
+                        <td>
+                            <a href="/Catalog/Edit/@item.Id" class="esh-table-link">Edit</a>
+                            |
+                            <a href="/Catalog/Details/@item.Id" class="esh-table-link">Details</a>
+                            |
+                            <a href="/Catalog/Delete/@item.Id" class="esh-table-link">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@if (Model.CatalogModel != null)
+{
+    <div class="esh-pager">
+        <div class="container">
+            <article class="esh-pager-wrapper row">
+                <nav>
+                    @if (Model.CatalogModel.ActualPage > 0)
+                    {
+                        <a href="/?pageIndex=@(Model.CatalogModel.ActualPage - 1)&pageSize=@Model.CatalogModel.ItemsPerPage"
+                           class="esh-pager-item esh-pager-item--navigable">
+                            Previous
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="esh-pager-item esh-pager-item--hidden">Previous</span>
+                    }
+
+                    <span class="esh-pager-item">
+                        Showing @Model.CatalogModel.ItemsPerPage of @Model.CatalogModel.TotalItems products -
+                        Page @(Model.CatalogModel.ActualPage + 1) - @Model.CatalogModel.TotalPages
+                    </span>
+
+                    @if (Model.CatalogModel.ActualPage < Model.CatalogModel.TotalPages - 1)
+                    {
+                        <a href="/?pageIndex=@(Model.CatalogModel.ActualPage + 1)&pageSize=@Model.CatalogModel.ItemsPerPage"
+                           class="esh-pager-item esh-pager-item--navigable">
+                            Next
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="esh-pager-item esh-pager-item--hidden">Next</span>
+                    }
+                </nav>
+            </article>
+        </div>
+    </div>
+}

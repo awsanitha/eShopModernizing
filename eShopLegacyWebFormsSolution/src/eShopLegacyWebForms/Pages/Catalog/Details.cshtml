@@ -1,0 +1,47 @@
+@page "{id:int}"
+@model eShopLegacyWebForms.Pages.Catalog.DetailsModel
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2 class="esh-body-title">Details</h2>
+
+<div class="container">
+    <div class="row">
+        <img class="col-md-6 esh-picture" src="/Pics/@Model.Item?.PictureFileName" alt="@Model.Item?.Name" />
+        <dl class="col-md-6 dl-horizontal">
+            <dt>Name</dt>
+            <dd>@Model.Item?.Name</dd>
+
+            <dt>Description</dt>
+            <dd>@Model.Item?.Description</dd>
+
+            <dt>Brand</dt>
+            <dd>@Model.Item?.CatalogBrand?.Brand</dd>
+
+            <dt>Type</dt>
+            <dd>@Model.Item?.CatalogType?.Type</dd>
+
+            <dt>Price</dt>
+            <dd><span class="esh-price">@Model.Item?.Price</span></dd>
+
+            <dt>Picture name</dt>
+            <dd>@Model.Item?.PictureFileName</dd>
+
+            <dt>Stock</dt>
+            <dd>@Model.Item?.AvailableStock</dd>
+
+            <dt>Restock</dt>
+            <dd>@Model.Item?.RestockThreshold</dd>
+
+            <dt>Max stock</dt>
+            <dd>@Model.Item?.MaxStockThreshold</dd>
+        </dl>
+    </div>
+
+    <div class="form-actions no-color esh-link-list">
+        <a href="/Catalog/Edit/@Model.Item?.Id" class="esh-link-item">Edit</a>
+        |
+        <a href="/" class="esh-link-item">Back to list</a>
+    </div>
+</div>
