@@ -14,6 +14,7 @@ namespace eShopWCFService
         private List<CatalogBrand> catalogBrands;
         private List<CatalogType> catalogTypes;
         private List<CatalogItemsStock> catalogItemsStock;
+        private List<DiscountItem> discountItems;
 
         public CatalogServiceMock()
         {
@@ -21,6 +22,7 @@ namespace eShopWCFService
             catalogBrands = new List<CatalogBrand>(PreconfiguredData.GetPreconfiguredCatalogBrands());
             catalogTypes = new List<CatalogType>(PreconfiguredData.GetPreconfiguredCatalogTypes());
             catalogItemsStock = new List<CatalogItemsStock>(PreconfiguredData.GetPreconfiguredCatalogItemsStock());
+            discountItems = new List<DiscountItem>(PreconfiguredData.GetPreconfiguredDiscountItems());
         }
 
         public CatalogItem FindCatalogItem(int id)
@@ -117,7 +119,7 @@ namespace eShopWCFService
 
         public DiscountItem GetDiscount(DateTime day)
         {
-            throw new NotImplementedException();
+            return discountItems.FirstOrDefault(y => y.Start.Date <= day.Date && y.End.Date >= day.Date);
         }
     }
 }

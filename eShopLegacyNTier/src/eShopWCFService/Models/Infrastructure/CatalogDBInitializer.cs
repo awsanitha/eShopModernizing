@@ -2,15 +2,37 @@
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShopWCFService.Models.Infrastructure
 {
-    public class CatalogDBInitializer : CreateDatabaseIfNotExists<EntityModel>
+    /// <summary>
+    /// Creates the catalog database if it does not already exist and seeds it with the
+    /// preconfigured data. Replaces the Entity Framework 6 CreateDatabaseIfNotExists
+    /// initializer, which has no EF Core equivalent.
+    /// </summary>
+    public class CatalogDBInitializer
     {
-        protected override void Seed(EntityModel context)
+        /// <summary>
+        /// Creates the database when missing and seeds it. Seeding only runs for a freshly
+        /// created database, preserving the CreateDatabaseIfNotExists semantics.
+        /// </summary>
+        public void InitializeDatabase(EntityModel context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var created = context.Database.EnsureCreated();
+            if (created)
+            {
+                Seed(context);
+            }
+        }
+
+        protected virtual void Seed(EntityModel context)
         {
             AddCatalogTypes(context);
             AddCatalogBrands(context);
@@ -61,6 +83,10 @@ namespace eShopWCFService.Models.Infrastructure
 
             foreach (var item in preconfiguredItems)
             {
+                // The preconfigured items carry only foreign keys; clearing the navigation
+                // properties stops EF Core from attempting to insert duplicate brands/types.
+                item.CatalogBrand = null;
+                item.CatalogType = null;
                 context.CatalogItems.Add(item);
             }
 

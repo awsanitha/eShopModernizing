@@ -4,7 +4,6 @@ namespace eShopWCFService
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
     using System.Runtime.Serialization;
 
     [Table("CatalogItemsStock")]
