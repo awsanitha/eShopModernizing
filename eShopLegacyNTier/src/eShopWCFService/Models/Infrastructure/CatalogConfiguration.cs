@@ -11,7 +11,7 @@ namespace eShopWCFService.Models.Infrastructure
 
         /// <summary>
         /// Supplies the application's <see cref="IConfiguration"/> so that the connection string
-        /// can be resolved from appsettings.json, replacing the legacy ConfigurationManager lookup.
+        /// can be resolved from appsettings.json, replacing the legacy &lt;connectionStrings&gt; lookup.
         /// </summary>
         public static void Initialize(IConfiguration configuration)
         {

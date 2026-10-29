@@ -8,18 +8,6 @@ namespace eShopWCFService
 {
     public partial class EntityModel : DbContext
     {
-        private readonly string connectionString;
-
-        public EntityModel()
-            : this(CatalogConfiguration.ConnectionString)
-        {
-        }
-
-        public EntityModel(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
-
         public EntityModel(DbContextOptions<EntityModel> options)
             : base(options)
         {
@@ -31,23 +19,17 @@ namespace eShopWCFService
         public virtual DbSet<CatalogType> CatalogTypes { get; set; }
         public virtual DbSet<DiscountItem> DiscountItems { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(connectionString ?? CatalogConfiguration.ConnectionString);
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CatalogBrand>()
                 .Property(e => e.Brand)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<CatalogItem>()
-                .Property(e => e.Price)
-                .HasPrecision(19, 4);
+            // The EF6 model called HasPrecision(19, 4) here. CatalogItem.Price already carries
+            // [Column(TypeName = "money")], and EF Core applies precision facets to the
+            // configured store type — which would emit the invalid "money(19,4)". money is
+            // fixed at 19,4, so the store type alone reproduces the legacy column exactly.
+            modelBuilder.Entity<CatalogItem>();
 
             modelBuilder.Entity<CatalogItemsStock>();
 

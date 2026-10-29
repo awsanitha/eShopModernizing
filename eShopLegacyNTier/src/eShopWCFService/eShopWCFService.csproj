@@ -14,7 +14,9 @@
     <PackageReference Include="CoreWCF.Http" Version="1.9.1" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.9.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
-    <!-- Pins the transitive dependency above the versions affected by CVE-2026-84008 / CVE-2026-70162. -->
+    <!-- Microsoft.Data.SqlClient 6.1.1 (via EntityFrameworkCore.SqlServer) resolves this
+         transitively at 9.0.4. Pinned to lift it above the versions affected by
+         CVE-2026-84008 / CVE-2026-70162. -->
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
   </ItemGroup>
 
