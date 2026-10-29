@@ -1,28 +1,33 @@
 ﻿using eShopWCFService.Models;
+using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.ServiceModel.Web;
+using CoreWCF;
 using System.Text;
 
 namespace eShopWCFService
 {
-    // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "CatalogService" in both code and config file together.
     public class CatalogService : ICatalogService
     {
         private EntityModel ents;
 
-        public CatalogService()
+        public CatalogService(EntityModel ents)
+            : this(ents, null)
         {
-            ents = new EntityModel();
         }
 
-        public CatalogService(EntityModel ents)
+        public CatalogService(EntityModel ents, ILogger<CatalogService> logger)
         {
             this.ents = ents;
+
+            // The EF6 EntityModel constructor registered CatalogDBInitializer, which ran on
+            // first database access. This reproduces that: the first operation to reach the
+            // database creates and seeds it if the startup attempt did not succeed.
+            CatalogDBInitializer.EnsureInitialized(ents, logger);
         }
 
         public DiscountItem GetDiscount(DateTime _day)
