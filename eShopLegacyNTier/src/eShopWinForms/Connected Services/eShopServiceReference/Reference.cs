@@ -567,21 +567,9 @@ namespace eShopWinForms.eShopServiceReference {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class CatalogServiceClient : System.ServiceModel.ClientBase<eShopWinForms.eShopServiceReference.ICatalogService>, eShopWinForms.eShopServiceReference.ICatalogService {
         
-        public CatalogServiceClient() {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
-        }
-        
+        // On .NET 10 the System.ServiceModel NuGet client packages do not support config-file
+        // endpoints, so the string-based constructor overloads have been removed.
+        // Use the explicit binding+address constructor instead (see Program.cs).
         public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
         }
