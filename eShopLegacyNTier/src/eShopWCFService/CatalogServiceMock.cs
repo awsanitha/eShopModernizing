@@ -1,10 +1,8 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWCFService
 {
@@ -102,7 +100,6 @@ namespace eShopWCFService
             CatalogItemsStock s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == cat.Date.Date).FirstOrDefault();
 
-            /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
             if (s != null)
             {
                 s.AvailableStock = cat.AvailableStock;
