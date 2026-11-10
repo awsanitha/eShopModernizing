@@ -566,20 +566,16 @@ namespace eShopWinForms.eShopServiceReference {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class CatalogServiceClient : System.ServiceModel.ClientBase<eShopWinForms.eShopServiceReference.ICatalogService>, eShopWinForms.eShopServiceReference.ICatalogService {
-        
-        public CatalogServiceClient() {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName) : 
-                base(endpointConfigurationName) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
-        }
-        
-        public CatalogServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress) {
+
+        // Default endpoint address - override via environment variable or appsettings
+        private static readonly string DefaultEndpointAddress =
+            System.Environment.GetEnvironmentVariable("CATALOG_SERVICE_URL")
+            ?? "http://localhost:62314/CatalogService.svc";
+
+        /// <summary>Initialises the client using the default endpoint address.</summary>
+        public CatalogServiceClient() :
+                base(new System.ServiceModel.BasicHttpBinding(),
+                     new System.ServiceModel.EndpointAddress(DefaultEndpointAddress)) {
         }
         
         public CatalogServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
