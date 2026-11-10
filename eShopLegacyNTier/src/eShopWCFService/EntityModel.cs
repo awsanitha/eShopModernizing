@@ -1,18 +1,14 @@
-using System;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using eShopWCFService.Models;
-using eShopWCFService.Models.Infrastructure;
 
 namespace eShopWCFService
 {
     public partial class EntityModel : DbContext
     {
-        public EntityModel()
-            : base(CatalogConfiguration.ConnectionString)
+        public EntityModel(DbContextOptions<EntityModel> options)
+            : base(options)
         {
-            Database.SetInitializer(new CatalogDBInitializer());
         }
 
         public virtual DbSet<CatalogBrand> CatalogBrands { get; set; }
@@ -21,7 +17,7 @@ namespace eShopWCFService
         public virtual DbSet<CatalogType> CatalogTypes { get; set; }
         public virtual DbSet<DiscountItem> DiscountItems { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CatalogBrand>()
                 .Property(e => e.Brand)

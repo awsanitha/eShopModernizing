@@ -1,10 +1,8 @@
-﻿using eShopWCFService.Models;
+using eShopWCFService.Models;
 using eShopWCFService.Models.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShopWCFService
 {
@@ -37,14 +35,14 @@ namespace eShopWCFService
                 (typeFilterIsNull ? true : x.CatalogTypeId == typeIdFilter)).ToList();
         }
 
-        public IEnumerable<CatalogType> GetCatalogTypes()
+        public List<CatalogType> GetCatalogTypes()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogTypes();
+            return catalogTypes;
         }
 
-        public IEnumerable<CatalogBrand> GetCatalogBrands()
+        public List<CatalogBrand> GetCatalogBrands()
         {
-            return PreconfiguredData.GetPreconfiguredCatalogBrands();
+            return catalogBrands;
         }
 
         public void CreateCatalogItem(CatalogItem catalogItem)
@@ -82,16 +80,6 @@ namespace eShopWCFService
             return items;
         }
 
-        List<CatalogBrand> ICatalogService.GetCatalogBrands()
-        {
-            return catalogBrands;
-        }
-
-        List<CatalogType> ICatalogService.GetCatalogTypes()
-        {
-            return catalogTypes;
-        }
-
         public int GetAvailableStock(DateTime date, int catalogItemId)
         {
             return catalogItemsStock.FirstOrDefault(x => (x.CatalogItemId == catalogItemId && x.Date.Date == date.Date)).AvailableStock;
@@ -102,7 +90,6 @@ namespace eShopWCFService
             CatalogItemsStock s = catalogItemsStock.Where(x => x.CatalogItemId == cat.CatalogItemId).ToList()
                     .Where(y => y.Date.Date == cat.Date.Date).FirstOrDefault();
 
-            /* Overwrite the existing stock item for that date if we already have one for this item. Otherwise, make a new entry*/
             if (s != null)
             {
                 s.AvailableStock = cat.AvailableStock;
